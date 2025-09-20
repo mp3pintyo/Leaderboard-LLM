@@ -1,5 +1,10 @@
 # LLM Leaderboard
 
+[![GitHub](https://img.shields.io/badge/GitHub-mp3pintyo%2FLeaderboard--LLM-blue)](https://github.com/mp3pintyo/Leaderboard-LLM)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-2.3.3-green)](https://flask.palletsprojects.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
 A Flask-based web application for comparing Large Language Model (LLM) performance across different tasks with side-by-side output comparison and comprehensive leaderboard views.
 
 ## Features
@@ -23,9 +28,10 @@ A Flask-based web application for comparing Large Language Model (LLM) performan
 
 ### Installation & Setup
 
-1. **Clone or extract the project**
-```powershell
-cd d:\AI\Leaderboard-LLM-v2
+1. **Clone the repository**
+```bash
+git clone https://github.com/mp3pintyo/Leaderboard-LLM.git
+cd Leaderboard-LLM
 ```
 
 2. **Install dependencies**
@@ -641,19 +647,35 @@ python scripts\generate_sample_data.py
 - `manage_tasks.py` - Interactive task management and selective deletion
 - `verify_setup.py` - Complete setup verification
 
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details on:
+
+- Setting up the development environment
+- Code style and standards  
+- Submitting pull requests
+- Reporting issues
+
 ## License
 
-This project is provided as-is for educational and research purposes. Please ensure compliance with any applicable licenses when using external libraries for real metric computation.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Support
 
 For issues or questions:
-1. Check the troubleshooting section above
-2. Review the test suite for usage examples
-3. Examine the sample data format in `data/sample.xlsx`
-4. Test API endpoints using the provided curl examples
-5. Use the database management utilities for reset/backup operations
+- **Issues**: [GitHub Issues](https://github.com/mp3pintyo/Leaderboard-LLM/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/mp3pintyo/Leaderboard-LLM/discussions)
+- **Documentation**: Check the `docs/` folder for detailed guides
+- **Troubleshooting**: Review the test suite for usage examples
+- **API Testing**: Use the provided curl examples
+- **Database**: Use the database management utilities for reset/backup operations
+
+## Acknowledgments
+
+- Built with Flask and Bootstrap for modern web experience
+- Supports multiple LLM evaluation metrics
+- Designed for ease of use and extensibility
 
 ---
 
-**Generated**: LLM Leaderboard v1.0 - A comprehensive solution for comparing language model performance across diverse tasks.
+**LLM Leaderboard v1.0** - A comprehensive solution for comparing language model performance across diverse tasks.
