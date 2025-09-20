@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}LLM Leaderboard - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="mb-4">
+            <i class="fas fa-trophy text-warning"></i>
+            LLM Performance Leaderboard
+        </h1>
+        
+        <!-- Filters Section -->
+        <div class="filter-section">
+            <h5><i class="fas fa-filter"></i> Filters</h5>
+            <form method="GET" action="{{ url_for('index') }}">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label">Open Source</label>
+                        <select name="open_source" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            <option value="true" {% if current_filters.get('open_source') == True %}selected{% endif %}>Yes</option>
+                            <option value="false" {% if current_filters.get('open_source') == False %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Task Group</label>
+                        <select name="task_group" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for group in task_groups %}
+                                <option value="{{ group }}" {% if current_filters.get('task_group') == group %}selected{% endif %}>
+                                    {{ group.replace('_', ' ').title() }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Reasoning</label>
+                        <select name="reasoning" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            <option value="true" {% if current_filters.get('reasoning') == True %}selected{% endif %}>Yes</option>
+                            <option value="false" {% if current_filters.get('reasoning') == False %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Sort By</label>
+                        <select name="sort_by" class="form-select form-select-sm">
+                            <option value="avg_quality_score" {% if current_filters.get('sort_by') == 'avg_quality_score' %}selected{% endif %}>Quality Score</option>
+                            <option value="avg_rouge_l" {% if current_filters.get('sort_by') == 'avg_rouge_l' %}selected{% endif %}>ROUGE-L</option>
+                            <option value="avg_bert_score" {% if current_filters.get('sort_by') == 'avg_bert_score' %}selected{% endif %}>BERTScore</option>
+                            <option value="task_count" {% if current_filters.get('sort_by') == 'task_count' %}selected{% endif %}>Task Count</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <label class="form-label">Provider</label>
+                        <select name="provider" class="form-select form-select-sm">
+                            <option value="">All Providers</option>
+                            {% for provider in providers %}
+                                <option value="{{ provider }}" {% if current_filters.get('provider') == provider %}selected{% endif %}>
+                                    {{ provider }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Parameters (B)</label>
+                        <div class="d-flex gap-1">
+                            <input type="number" name="min_parameters" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('min_parameters', '') }}" placeholder="Min" min="1">
+                            <input type="number" name="max_parameters" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('max_parameters', '') }}" placeholder="Max" max="1000">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Context (K tokens)</label>
+                        <div class="d-flex gap-1">
+                            <input type="number" name="min_context" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('min_context', '') }}" placeholder="Min" min="1">
+                            <input type="number" name="max_context" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('max_context', '') }}" placeholder="Max" max="1000">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Image Input</label>
+                        <select name="image_input" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            <option value="true" {% if current_filters.get('image_input') == True %}selected{% endif %}>Yes</option>
+                            <option value="false" {% if current_filters.get('image_input') == False %}selected{% endif %}>No</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
+                        <label class="form-label">Release Date</label>
+                        <div class="d-flex gap-1">
+                            <input type="date" name="min_date" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('min_date', '') }}">
+                            <input type="date" name="max_date" class="form-control form-control-sm" 
+                                   value="{{ current_filters.get('max_date', '') }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <label class="form-label">Tag</label>
+                        <input type="text" name="tag" class="form-control form-control-sm" 
+                               value="{{ current_filters.get('tag', '') }}" placeholder="e.g. instruction">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Language</label>
+                        <input type="text" name="language" class="form-control form-control-sm" 
+                               value="{{ current_filters.get('language', '') }}" placeholder="e.g. en">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end justify-content-end">
+                        <button type="submit" class="btn btn-primary btn-sm me-2">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-times"></i> Clear
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+
+        
+        <!-- Leaderboard Table -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        {% for col_key in enabled_columns %}
+                            {% set col_info = visible_columns[col_key] %}
+                            <th>{{ col_info.label }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in leaderboard %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ model.name }}</strong>
+                            <br>
+                            <small class="model-meta">{{ model.model_key }}</small>
+                            {% if model.meta.tags %}
+                                <br>
+                                {% for tag in model.meta.tags %}
+                                    <span class="badge bg-secondary metric-badge">{{ tag }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                        <td>{{ model.meta.get('provider', 'Unknown') }}</td>
+                        <td>
+                            {% if model.meta.open_source %}
+                                <span class="badge bg-success">Yes</span>
+                            {% else %}
+                                <span class="badge bg-warning">No</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ model.task_count or 0 }}</td>
+                        <td>{{ "%.0f"|format(model.avg_tokens) if model.avg_tokens else 'N/A' }}</td>
+                        <td>
+                            {% if model.avg_quality_score %}
+                                <span class="badge bg-success">{{ "%.1f"|format(model.avg_quality_score) }}/10</span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if model.avg_rouge_l %}
+                                <span class="badge bg-info">{{ "%.3f"|format(model.avg_rouge_l) }}</span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if model.avg_bert_score %}
+                                <span class="badge bg-success">{{ "%.3f"|format(model.avg_bert_score) }}</span>
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('model_detail', model_key=model.model_key) }}" 
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Details
+                            </a>
+                            <a href="{{ url_for('side_by_side') }}?models={{ model.model_key }}" 
+                               class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-columns"></i> Compare
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted">
+                            <i class="fas fa-inbox"></i> No models found matching the current filters.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if leaderboard %}
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <p class="text-muted text-center">
+                    Showing {{ leaderboard|length }} models
+                    {% if current_filters %}
+                        with applied filters
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

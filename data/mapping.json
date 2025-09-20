@@ -1,0 +1,11 @@
+{
+  "task_id": "task_id",
+  "task_name": "task_name", 
+  "prompt_text": "prompt_text",
+  "task_group": "task_group",
+  "model_key": "model_key",
+  "output_text": "output_text",
+  "tokens": "tokens",
+  "length": "length",
+  "quality_score": "quality_score"
+}

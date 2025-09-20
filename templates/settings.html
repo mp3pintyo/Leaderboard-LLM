@@ -1,0 +1,330 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - LLM Leaderboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="mb-4">
+            <i class="fas fa-cog text-secondary"></i>
+            Settings
+        </h1>
+        
+        <!-- Leaderboard Display Settings -->
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-table"></i> Leaderboard Display Columns</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Customize your view:</strong> Select which columns to display on the leaderboard. Changes are saved automatically.
+                        </div>
+                        
+                        <form id="settingsForm">
+                            <div class="row">
+                                {% for column_key, column_info in available_columns.items() %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input column-toggle" type="checkbox" 
+                                               id="column_{{ column_key }}" 
+                                               name="columns" 
+                                               value="{{ column_key }}"
+                                               data-column="{{ column_key }}"
+                                               {% if column_info.enabled %}checked{% endif %}>
+                                        <label class="form-check-label" for="column_{{ column_key }}">
+                                            <strong>{{ column_info.label }}</strong>
+                                            {% if column_key in ['rank', 'model', 'actions'] %}
+                                                <span class="badge bg-warning">Required</span>
+                                            {% endif %}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="button" id="saveSettings" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Save Settings
+                                </button>
+                                <button type="button" id="resetSettings" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo"></i> Reset to Default
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div id="settingsResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Display Settings -->
+        <div class="row mt-4">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-filter"></i> Filter Display Settings</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Customize filters:</strong> Select which filter controls to display on the leaderboard. Changes are saved automatically.
+                        </div>
+                        
+                        <form id="filterSettingsForm">
+                            <div class="row">
+                                {% for filter_key, filter_info in available_filters.items() %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input filter-toggle" type="checkbox" 
+                                               id="filter_{{ filter_key }}" 
+                                               name="filters" 
+                                               value="{{ filter_key }}"
+                                               data-filter="{{ filter_key }}"
+                                               {% if filter_info.enabled %}checked{% endif %}>
+                                        <label class="form-check-label" for="filter_{{ filter_key }}">
+                                            <strong>{{ filter_info.label }}</strong>
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="mt-4">
+                                <button type="button" id="saveFilterSettings" class="btn btn-info">
+                                    <i class="fas fa-save"></i> Save Filter Settings
+                                </button>
+                                <button type="button" id="resetFilterSettings" class="btn btn-outline-secondary">
+                                    <i class="fas fa-undo"></i> Reset to Default
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div id="filterSettingsResult" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Preview Section -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-eye"></i> Preview</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Preview of how your leaderboard will look:</p>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
+                                    <tr id="previewHeader">
+                                        <!-- Preview headers will be generated by JavaScript -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-muted">
+                                        <td colspan="20" class="text-center">Sample data preview...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Settings (Future) -->
+        <div class="row mt-4">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="fas fa-wrench"></i> Additional Settings</h6>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">More settings coming soon...</p>
+                        <ul class="text-muted">
+                            <li>Default sorting preferences</li>
+                            <li>Items per page</li>
+                            <li>Theme customization</li>
+                            <li>Export options</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.getElementById('saveSettings');
+    const resetBtn = document.getElementById('resetSettings');
+    const resultDiv = document.getElementById('settingsResult');
+    const columnToggles = document.querySelectorAll('.column-toggle');
+    
+    const saveFilterBtn = document.getElementById('saveFilterSettings');
+    const resetFilterBtn = document.getElementById('resetFilterSettings');
+    const filterResultDiv = document.getElementById('filterSettingsResult');
+    const filterToggles = document.querySelectorAll('.filter-toggle');
+    
+    // Required columns that cannot be disabled
+    const requiredColumns = ['rank', 'model', 'actions'];
+    
+    // Disable required columns
+    requiredColumns.forEach(col => {
+        const checkbox = document.getElementById(`column_${col}`);
+        if (checkbox) {
+            checkbox.disabled = true;
+        }
+    });
+    
+    // Update preview when toggles change
+    columnToggles.forEach(toggle => {
+        toggle.addEventListener('change', updatePreview);
+    });
+    
+    // Initial preview update
+    updatePreview();
+    
+    // Save column settings
+    saveBtn.addEventListener('click', function() {
+        const enabledColumns = Array.from(columnToggles)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+        
+        fetch('/api/settings/columns', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled_columns: enabledColumns
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check"></i> Column settings saved successfully! 
+                        <a href="{{ url_for('index') }}" class="btn btn-sm btn-primary ms-2">
+                            <i class="fas fa-eye"></i> View Leaderboard
+                        </a>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Failed to save settings: ${data.error}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}
+                </div>
+            `;
+        });
+    });
+    
+    // Save filter settings
+    saveFilterBtn.addEventListener('click', function() {
+        const enabledFilters = Array.from(filterToggles)
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
+        
+        fetch('/api/settings/filters', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled_filters: enabledFilters
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                filterResultDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <i class="fas fa-check"></i> Filter settings saved successfully! 
+                        <a href="{{ url_for('index') }}" class="btn btn-sm btn-info ms-2">
+                            <i class="fas fa-eye"></i> View Leaderboard
+                        </a>
+                    </div>
+                `;
+            } else {
+                filterResultDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> Failed to save filter settings: ${data.error}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            filterResultDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}
+                </div>
+            `;
+        });
+    });
+    
+    // Reset column settings to default
+    resetBtn.addEventListener('click', function() {
+        if (confirm('Reset column settings to default?')) {
+            fetch('/api/settings/columns/reset', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to reset column settings');
+                }
+            });
+        }
+    });
+    
+    // Reset filter settings to default
+    resetFilterBtn.addEventListener('click', function() {
+        if (confirm('Reset filter settings to default?')) {
+            fetch('/api/settings/filters/reset', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to reset filter settings');
+                }
+            });
+        }
+    });
+    
+    function updatePreview() {
+        const enabledColumns = Array.from(columnToggles)
+            .filter(cb => cb.checked)
+            .map(cb => ({
+                key: cb.value,
+                label: cb.nextElementSibling.textContent.replace('Required', '').trim()
+            }));
+        
+        const previewHeader = document.getElementById('previewHeader');
+        previewHeader.innerHTML = enabledColumns
+            .map(col => `<th>${col.label}</th>`)
+            .join('');
+    }
+});
+</script>
+{% endblock %}

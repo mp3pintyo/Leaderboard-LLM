@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}{{ model.name }} - Model Details{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>
+                <i class="fas fa-robot text-primary"></i>
+                {{ model.name }}
+            </h1>
+            <div>
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Leaderboard
+                </a>
+                <a href="{{ url_for('side_by_side') }}?models={{ model.model_key }}" class="btn btn-primary">
+                    <i class="fas fa-columns"></i> Compare
+                </a>
+            </div>
+        </div>
+        
+        <!-- Model Information -->
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle"></i> Model Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Model Key:</strong> {{ model.model_key }}</p>
+                                <p><strong>Provider:</strong> {{ model.meta.get('provider', 'Unknown') }}</p>
+                                <p><strong>Parameters:</strong> {{ model.meta.get('parameters', 'Unknown') }}B</p>
+                                <p><strong>Context Window:</strong> {{ model.meta.get('context_window', 'Unknown') }}K</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Open Source:</strong> 
+                                    {% if model.meta.open_source %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">No</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Reasoning:</strong> 
+                                    {% if model.meta.reasoning %}
+                                        <span class="badge bg-success">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Image Input:</strong> 
+                                    {% if model.meta.image_input %}
+                                        <span class="badge bg-info">Yes</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">No</span>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Release Date:</strong> {{ model.meta.get('release_date', 'Unknown') }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p><strong>Languages:</strong> 
+                                    {% for lang in model.meta.get('languages', []) %}
+                                        <span class="badge bg-primary">{{ lang }}</span>
+                                    {% endfor %}
+                                </p>
+                                <p><strong>Tags:</strong> 
+                                    {% for tag in model.meta.get('tags', []) %}
+                                        <span class="badge bg-secondary">{{ tag }}</span>
+                                    {% endfor %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-line"></i> Performance Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        {% set avg_quality = model.tasks|rejectattr('task_id', 'equalto', 'research_018')|map(attribute='quality_score')|select('ne', None)|list %}
+                        {% set avg_rouge = model.tasks|map(attribute='rouge_l')|select('defined')|select('ne', None)|list %}
+                        {% set avg_bert = model.tasks|map(attribute='bert_score')|select('defined')|select('ne', None)|list %}
+                        {% set avg_tokens = model.tasks|map(attribute='tokens')|select('defined')|select('ne', None)|list %}
+                        
+                        <p><strong>Total Tasks:</strong> {{ model.tasks|length }}</p>
+                        <div class="mb-2">
+                            <p><strong>Avg Quality Score:</strong>
+                                {% if avg_quality %}
+                                    <span class="badge bg-success">{{ "%.1f"|format(avg_quality|sum / avg_quality|length) }}/10</span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Avg ROUGE-L:</strong>
+                                {% if avg_rouge %}
+                                    <span class="badge bg-info">{{ "%.3f"|format(avg_rouge|sum / avg_rouge|length) }}</span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Avg BERTScore:</strong>
+                                {% if avg_bert %}
+                                    <span class="badge bg-success">{{ "%.3f"|format(avg_bert|sum / avg_bert|length) }}</span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </p>
+                            <p><strong>Avg Tokens:</strong> 
+                                {% if avg_tokens %}
+                                    {{ "%.0f"|format(avg_tokens|sum / avg_tokens|length) }}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Per-Task Performance -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-tasks"></i> Per-Task Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if model.tasks %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Task ID</th>
+                                            <th>Task Group</th>
+                                            <th>Tokens</th>
+                                            <th>Quality Score</th>
+                                            <th>ROUGE-L</th>
+                                            <th>BERTScore</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for task in model.tasks %}
+                                        <tr>
+                                            <td>{{ task.task_id }}</td>
+                                            <td>
+                                                <span class="badge bg-secondary">{{ task.task_group.replace('_', ' ').title() }}</span>
+                                            </td>
+                                            <td>{{ task.tokens or 'N/A' }}</td>
+                                            <td>
+                                                {% if task.quality_score is not none %}
+                                                    <span class="badge bg-success">{{ "%.1f"|format(task.quality_score) }}/10</span>
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.rouge_l %}
+                                                    <span class="badge bg-info">{{ "%.3f"|format(task.rouge_l) }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if task.bert_score %}
+                                                    <span class="badge bg-success">{{ "%.3f"|format(task.bert_score) }}</span>
+                                                {% else %}
+                                                    <span class="text-muted">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="fas fa-inbox fa-3x"></i>
+                                <p class="mt-3">No task data available for this model.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

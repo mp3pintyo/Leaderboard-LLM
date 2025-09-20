@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Side-by-Side Comparison{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="mb-4">
+            <i class="fas fa-columns text-info"></i>
+            Side-by-Side Model Comparison
+        </h1>
+        
+        <!-- Selection Form -->
+        <div class="filter-section">
+            <h5><i class="fas fa-filter"></i> Select Task and Models</h5>
+            <form method="GET" action="{{ url_for('side_by_side') }}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="form-label">Task</label>
+                        <select name="task_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">Choose a task...</option>
+                            {% for t in tasks %}
+                            <option value="{{ t.task_id }}" {% if task and task.task_id == t.task_id %}selected{% endif %}>
+                                {{ t.task_id }} - {{ t.task_name[:50] }}...
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">Models to Compare (select 2-4 models)</label>
+                        <div class="row">
+                            {% for model in models %}
+                            <div class="col-md-3 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="models" 
+                                           value="{{ model.model_key }}" 
+                                           {% if model.model_key in selected_models %}checked{% endif %}
+                                           onchange="this.form.submit()">
+                                    <label class="form-check-label">
+                                        {{ model.name }}
+                                    </label>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        {% if task and outputs %}
+        <!-- Task Information -->
+        <div class="task-info mb-4">
+            <h5><i class="fas fa-info-circle"></i> Task: {{ task.task_name }}</h5>
+            <p><strong>Task ID:</strong> {{ task.task_id }}</p>
+            <p><strong>Group:</strong> <span class="badge bg-secondary">{{ task.task_group.replace('_', ' ').title() }}</span></p>
+            <p><strong>Prompt:</strong></p>
+            <div class="alert alert-light">
+                {{ task.prompt_text }}
+            </div>
+        </div>
+        
+        <!-- Comparison Grid -->
+        <div class="row">
+            {% if outputs|length <= 4 %}
+                <!-- Side-by-side layout for 2-4 models -->
+                {% for output in outputs %}
+                <div class="col-md-{{ 12 // outputs|length if outputs|length <= 3 else 3 }}">
+                    <div class="card mb-4">
+                        <div class="card-header bg-{{ loop.cycle('primary', 'success', 'warning', 'info') }}">
+                            <h6 class="mb-0 text-white">
+                                <i class="fas fa-robot"></i> {{ output.model_name }}
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <!-- Metrics -->
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <small class="text-muted">Quality Score</small>
+                                    <div>
+                                        {% if output.quality_score is not none %}
+                                            <span class="badge bg-success">{{ "%.1f"|format(output.quality_score) }}/10</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">Tokens</small>
+                                    <div>{{ output.tokens or 'N/A' }}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Output Text -->
+                            <div class="output-text">
+                                {% if output.output_text %}
+                                    {{ output.output_text }}
+                                {% else %}
+                                    <span class="text-muted">No output available</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Additional Metrics -->
+                            <div class="row mt-3">
+                                <div class="col-6">
+                                    <small class="text-muted">ROUGE-L</small>
+                                    <div>
+                                        {% if output.rouge_l is not none %}
+                                            <span class="badge bg-info">{{ "%.3f"|format(output.rouge_l) }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <small class="text-muted">BERTScore</small>
+                                    <div>
+                                        {% if output.bert_score is not none %}
+                                            <span class="badge bg-success">{{ "%.3f"|format(output.bert_score) }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <!-- Vertical layout for many models -->
+                {% for output in outputs %}
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-robot"></i> {{ output.model_name }}
+                                    </h6>
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Quality Score:</small>
+                                    {% if output.quality_score is not none %}
+                                        <span class="badge bg-success">{{ "%.1f"|format(output.quality_score) }}/10</span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">Tokens:</small> {{ output.tokens or 'N/A' }}
+                                </div>
+                                <div class="col-md-3">
+                                    <small class="text-muted">ROUGE-L:</small>
+                                    {% if output.rouge_l is not none %}
+                                        <span class="badge bg-info">{{ "%.3f"|format(output.rouge_l) }}</span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="output-text">
+                                {% if output.output_text %}
+                                    {{ output.output_text }}
+                                {% else %}
+                                    <span class="text-muted">No output available</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        {% elif task and not outputs %}
+        <!-- No outputs for selected models -->
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>No data found!</strong> The selected models don't have outputs for this task.
+        </div>
+        
+        {% elif not task %}
+        <!-- No task selected -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Get Started:</strong> Select a task above to begin comparing model outputs.
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h5>Quick Start Examples:</h5>
+                <div class="row">
+                    {% for task_example in tasks[:6] %}
+                    <div class="col-md-4 mb-2">
+                        <a href="{{ url_for('side_by_side') }}?task_id={{ task_example.task_id }}&models=llm-001&models=llm-002" 
+                           class="btn btn-outline-primary btn-sm w-100">
+                            {{ task_example.task_id }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Limit model selection to maximum 4
+    const modelCheckboxes = document.querySelectorAll('input[name="models"]');
+    modelCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const checkedBoxes = document.querySelectorAll('input[name="models"]:checked');
+            if (checkedBoxes.length > 4) {
+                this.checked = false;
+                alert('Please select maximum 4 models for comparison');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
