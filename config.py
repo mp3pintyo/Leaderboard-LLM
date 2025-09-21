@@ -184,6 +184,48 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-07-09',
         'image_input': True
+    },
+    'llm-013': {
+        'name': 'Kimi K2',
+        'api_id': 'kimi-k2',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'Moonshot AI',
+        'parameters': 1000,  # Billion parameters
+        'context_window': 128,  # Thousand tokens (K)
+        'release_date': '2025-07-11',
+        'image_input': False
+    },
+    'llm-014': {
+        'name': 'DeepSeek-TNG R1T2 Chimera',
+        'api_id': 'deepseek-tng-r1t2-chimera',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'TNG Tech',
+        'parameters': 671,  # Billion parameters
+        'context_window': 130,  # Thousand tokens (K)
+        'release_date': '2025-07-02',
+        'image_input': False
+    },
+    'llm-015': {
+        'name': 'DeepSeek-R1-0528',
+        'api_id': 'deepseek-r1-0528',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'DeepSeek',
+        'parameters': 671,  # Billion parameters
+        'context_window': 164,  # Thousand tokens (K)
+        'release_date': '2025-05-28',
+        'image_input': False
     }
 }
 
