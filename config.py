@@ -226,6 +226,20 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 164,  # Thousand tokens (K)
         'release_date': '2025-05-28',
         'image_input': False
+    },
+    'llm-016': {
+        'name': 'Magistral Small 1.2',
+        'api_id': 'magistral-small-1-2',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'Mistral AI',
+        'parameters': 24,  # Billion parameters
+        'context_window': 128,  # Thousand tokens (K)
+        'release_date': '2025-09-17',
+        'image_input': True
     }
 }
 
