@@ -34,28 +34,41 @@ git clone https://github.com/mp3pintyo/Leaderboard-LLM.git
 cd Leaderboard-LLM
 ```
 
-2. **Install dependencies**
+2. **Create and activate virtual environment**
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
+```
+
+3. **Install dependencies**
 ```powershell
 pip install -r requirements.txt
 ```
 
-3. **Initialize the database**
+4. **Initialize the database**
 ```powershell
 python database.py
 ```
 
-4. **Import sample data (optional)**
+5. **Import sample data (optional)**
 ```powershell
 python scripts\import_excel.py data\sample.xlsx
 ```
 
-5. **Start the application**
+6. **Start the application**
 ```powershell
 $env:FLASK_APP = "app.py"
 flask run --host=0.0.0.0 --port=5000
 ```
 
-6. **Open in browser**
+7. **Open in browser**
 ```
 http://localhost:5000
 ```
