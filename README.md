@@ -1,6 +1,16 @@
-# LLM Leaderboard
+# LLM Lea## Features
 
-[![GitHub](https://img.shields.io/badge/GitHub-mp3pintyo%2FLeaderboard--LLM-blue)](https://github.com/mp3pintyo/Leaderboard-LLM)
+- 🏆 **Interactive Leaderboard** - Compare models across multiple metrics with filtering
+- ⚙️ **Customizable Columns** - Personalize leaderboard view with column selection settings
+- 🔄 **Side-by-Side Comparison** - View model outputs for the same task simultaneously with visual performance context
+- 📊 **Detailed Analytics** - Per-model and per-task performance breakdowns
+- 📈 **Task Group Performance Charts** - Visual comparison charts on model detail pages showing 8 models (target + 7 others)
+- 🎯 **Task Performance Overview** - Interactive Chart.js visualization on comparison pages showing up to 12 models
+- 📁 **Excel Import** - Easy data import from Excel/CSV files with configurable mapping
+- 🔍 **Advanced Filtering** - Filter by open source, task groups, languages, metrics, and more
+- 🔢 **Quality Score System** - Human evaluation scoring (0-10) with research task exclusion
+- 🌐 **REST API** - Full API access for programmatic usage
+- 📱 **Responsive UI** - Modern Bootstrap-based interface with Chart.js visualizations[![GitHub](https://img.shields.io/badge/GitHub-mp3pintyo%2FLeaderboard--LLM-blue)](https://github.com/mp3pintyo/Leaderboard-LLM)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-2.3.3-green)](https://flask.palletsprojects.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
@@ -79,7 +89,7 @@ http://localhost:5000
 ```
 d:\AI\Leaderboard-LLM-v2\
 ├── app.py                     # Main Flask application
-├── database.py                # Database schema and operations
+├── database.py                # Database schema and operations with task performance analysis
 ├── config.py                  # Configuration settings
 ├── requirements.txt           # Python dependencies
 ├── README.md                  # This file
@@ -94,8 +104,8 @@ d:\AI\Leaderboard-LLM-v2\
 ├── templates/
 │   ├── base.html             # Base template
 │   ├── index.html            # Main leaderboard page
-│   ├── side_by_side.html     # Comparison page
-│   └── model.html            # Model details page
+│   ├── side_by_side.html     # Comparison page with Chart.js visualizations
+│   └── model.html            # Model details page with task group charts
 ├── static/                   # Static assets (CSS, JS, images)
 ├── eval/
 │   └── compute_metrics.py    # Metrics computation (mock/real)
@@ -153,9 +163,23 @@ python scripts\import_excel.py your_data.xlsx --mapping data\custom_mapping.json
 
 **Main Pages:**
 - `/` - Leaderboard with filtering options
-- `/side-by-side` - Side-by-side model comparison  
+- `/side-by-side` - Side-by-side model comparison with task performance chart visualization
 - `/settings` - Customize leaderboard column display
-- `/model/<model_key>` - Detailed model performance with task group charts
+- `/model/<model_key>` - Detailed model performance with task group charts (8 models comparison)
+
+**Side-by-Side Comparison Features:**
+- **Task Performance Overview Chart** - Interactive Chart.js visualization showing up to 12 top performing models
+- **Selected Model Highlighting** - Chosen models displayed in red, other top performers in blue
+- **Interactive Tooltips** - Hover for detailed metrics (Quality Score, Tokens, ROUGE-L, BERTScore)
+- **Visual Context** - Performance comparison before detailed output analysis
+- **Responsive Design** - Charts adapt to screen size with proper model name truncation
+
+**Task Group Performance Charts:**
+- Available on individual model detail pages (`/model/<model_key>`)
+- Shows performance across 5 main task groups: Language tasks, Logical reasoning, Context understanding, Programming, SVG generation
+- Displays target model plus 7 similar-performing models (8 total)
+- Intelligent model selection algorithm: 3-4 models before/after target model
+- Interactive tooltips with task counts and performance metrics
 
 **Column Customization:**
 The Settings page allows you to:
@@ -211,8 +235,20 @@ curl "http://localhost:5000/api/leaderboard?task_group=reasoning&sort_by=avg_ble
 # Get all tasks
 curl http://localhost:5000/api/tasks
 
-# Get task outputs
+# Get task outputs with performance data
 curl "http://localhost:5000/api/task/reasoning_001/outputs?models=llm-001,llm-002"
+
+# Get task performance comparison data (for charts)
+curl "http://localhost:5000/api/task/logical_reasoning_005/performance?models=llm-001,llm-003"
+```
+
+**Visual Analytics:**
+```powershell
+# Access model detail pages with task group charts
+curl http://localhost:5000/model/llm-001
+
+# Access side-by-side comparison with task performance visualization
+curl "http://localhost:5000/side-by-side?task_id=logical_reasoning_005&models=llm-001&models=llm-003"
 ```
 
 **Import Data:**
@@ -292,6 +328,30 @@ METRICS_CONFIG = {
 
 ## Configuration
 
+### Visualization Configuration
+
+Chart.js visualizations can be customized:
+
+```javascript
+// Task performance charts (side-by-side page)
+const taskPerformanceConfig = {
+    chart_height: '400px',
+    max_models: 12,
+    selected_color: 'rgba(220, 53, 69, 0.8)',  // Red for selected
+    other_color: 'rgba(54, 162, 235, 0.8)',    // Blue for others
+    model_name_truncate: 15
+};
+
+// Task group charts (model detail pages)  
+const taskGroupConfig = {
+    chart_height: '350px',
+    models_per_chart: 8,
+    target_highlight_color: 'rgba(220, 53, 69, 0.8)',
+    comparison_color: 'rgba(54, 162, 235, 0.8)',
+    model_name_truncate: 12
+};
+```
+
 ### Model Configuration
 
 Edit `config.py` to add/modify models:
@@ -332,6 +392,74 @@ Supported task groups (configurable in `config.py`):
 - `math` - Mathematical problem solving
 - `knowledge_qa` - Knowledge-based Q&A
 - `instruction_following` - Following complex instructions
+
+## Visualization Features
+
+### Task Performance Charts (Side-by-Side Comparison)
+
+The side-by-side comparison page (`/side-by-side`) includes interactive performance visualization:
+
+**Features:**
+- **Interactive Bar Charts** - Chart.js powered visualizations
+- **Up to 12 Models** - Shows top performing models for the selected task
+- **Color Coding** - Selected models in red, other top performers in blue
+- **Rich Tooltips** - Hover for Quality Score, Tokens, ROUGE-L, BERTScore details
+- **Responsive Design** - Adapts to screen size with proper scaling
+
+**Usage:**
+1. Select a task from the dropdown menu
+2. Choose 2-4 models to compare
+3. View the performance chart above detailed output comparison
+4. Use the chart to understand relative performance before analyzing outputs
+
+### Task Group Performance Charts (Model Detail Pages)
+
+Individual model pages (`/model/<model_key>`) feature comprehensive task group analysis:
+
+**Features:**
+- **5 Task Groups** - Language tasks, Logical reasoning, Context understanding, Programming, SVG generation
+- **8 Model Comparison** - Target model + 7 similar performers per chart
+- **Intelligent Selection** - Algorithm selects 3-4 models before/after target based on performance
+- **Adaptive Layout** - Responsive grid layout (2 charts per row on desktop)
+- **Interactive Tooltips** - Task count and performance metrics on hover
+
+**Chart Generation Algorithm:**
+1. Sorts all models by performance in each task group
+2. Finds target model position in sorted list
+3. Selects 3-4 models before and 3-4 models after target
+4. Adapts selection when fewer models available on one side
+5. Highlights target model in red, comparison models in blue
+
+### Chart Configuration
+
+**Default Settings:**
+```javascript
+// Task Performance Chart (side-by-side)
+{
+    type: 'bar',
+    height: '400px',
+    max_models: 12,
+    selected_color: '#dc3545',      // Bootstrap danger (red)
+    other_color: '#0d6efd',         // Bootstrap primary (blue)
+    responsive: true,
+    tooltips: true
+}
+
+// Task Group Charts (model detail)
+{
+    type: 'bar', 
+    height: '350px',
+    models_per_chart: 8,
+    target_color: '#dc3545',        // Red for target model
+    comparison_color: '#0d6efd',    // Blue for comparison models
+    grid_layout: 'col-lg-6 col-md-12'
+}
+```
+
+**Customization:**
+Charts can be customized by modifying the Chart.js configuration in:
+- `templates/side_by_side.html` - Task performance charts
+- `templates/model.html` - Task group comparison charts
 
 ## Data Schema
 
@@ -503,6 +631,34 @@ python -c "from database import DatabaseManager; db = DatabaseManager(); [print(
 
 ### Common Issues
 
+**Chart not displaying:**
+```powershell
+# Check if Chart.js is loaded
+# Open browser developer tools (F12) and check console for errors
+# Verify task has data: visit /api/task/<task_id>/outputs
+
+# If charts don't appear, clear browser cache and reload
+```
+
+**Performance charts show wrong models:**
+```powershell
+# Update database model selection algorithm
+python -c "from database import DatabaseManager; db = DatabaseManager(); print('Task group data:', db.get_task_group_performance('llm-001'))"
+
+# Ensure models have performance data for the task
+python -c "from database import DatabaseManager; db = DatabaseManager(); print('Task performance:', db.get_task_performance('logical_reasoning_005'))"
+```
+
+**Side-by-side comparison missing chart:**
+- Ensure task_id parameter is provided in URL
+- Check that selected models have data for the task
+- Verify Chart.js CDN is accessible (check network tab in browser dev tools)
+
+**Model detail charts showing empty:**
+- Verify model exists: `/api/model/<model_key>`
+- Check if model has task group performance data
+- Ensure task groups are properly configured in config.py
+
 **Database locked error:**
 ```powershell
 # Option 1: Use backup system
@@ -572,6 +728,26 @@ flask run --host=0.0.0.0 --port=5001
 - Consider using PostgreSQL for production environments
 
 ## Contributing
+
+### Adding New Features
+
+**Adding custom task performance metrics:**
+1. Add metric computation to `eval/compute_metrics.py`
+2. Update `database.py` get_task_performance() method
+3. Modify chart configuration in templates
+4. Update API endpoints for new metric exposure
+
+**Customizing chart appearance:**
+1. Edit Chart.js configuration in `templates/side_by_side.html` 
+2. Modify color schemes in chart data generation
+3. Adjust responsive breakpoints and sizing
+4. Update tooltip formatting and content
+
+**Adding new task group categories:**
+1. Update `config.py` TASK_GROUPS list
+2. Modify `database.py` get_task_group_performance() method
+3. Import data with new task_group values
+4. Charts will automatically include new categories
 
 ### Adding New Metrics
 
