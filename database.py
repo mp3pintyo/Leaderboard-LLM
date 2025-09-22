@@ -415,11 +415,13 @@ class DatabaseManager:
                     m.model_key,
                     m.name,
                     t.task_group,
-                    AVG(CASE WHEN o.quality_score IS NOT NULL THEN o.quality_score ELSE 0 END) as avg_score,
-                    COUNT(o.output_id) as task_count
+                    AVG(CASE WHEN me.metric_name = 'quality_score' AND me.metric_value IS NOT NULL 
+                             THEN me.metric_value ELSE 0 END) as avg_score,
+                    COUNT(DISTINCT o.id) as task_count
                 FROM models m
                 LEFT JOIN outputs o ON m.model_key = o.model_key
                 LEFT JOIN tasks t ON o.task_id = t.task_id
+                LEFT JOIN metrics me ON o.id = me.output_id AND me.metric_name = 'quality_score'
                 WHERE t.task_group IS NOT NULL
                     AND t.task_id != 'research_018'  -- Exclude research task from comparison
                 GROUP BY m.model_key, m.name, t.task_group
