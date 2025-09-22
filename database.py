@@ -460,9 +460,22 @@ class DatabaseManager:
                         if target_model:
                             target_index = sorted_models.index(target_model)
                             
-                            # Get 2-3 models before and after target model
-                            start_idx = max(0, target_index - 2)
-                            end_idx = min(len(sorted_models), target_index + 3)
+                            # Get 7 other models around target model (total 8 models including target)
+                            # Try to get 3-4 models before and 3-4 models after
+                            before_count = min(3, target_index)
+                            after_count = min(4, len(sorted_models) - target_index - 1)
+                            
+                            # If we don't have enough models on one side, get more from the other side
+                            if before_count + after_count < 7:
+                                if before_count < 3:
+                                    # Get more from after if possible
+                                    after_count = min(7 - before_count, len(sorted_models) - target_index - 1)
+                                elif after_count < 4:
+                                    # Get more from before if possible
+                                    before_count = min(7 - after_count, target_index)
+                            
+                            start_idx = max(0, target_index - before_count)
+                            end_idx = min(len(sorted_models), target_index + after_count + 1)
                             comparison_models = sorted_models[start_idx:end_idx]
                             
                             comparison_data[group] = {
