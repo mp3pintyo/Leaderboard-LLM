@@ -160,7 +160,12 @@ def create_app() -> Flask:
             flash('Model not found')
             return redirect(url_for('index'))
         
-        return render_template('model.html', model=model)
+        # Get task group performance comparison data
+        task_group_data = db.get_task_group_performance(model_key=model_key, limit_groups=5)
+        
+        return render_template('model.html', 
+                             model=model, 
+                             task_group_data=task_group_data)
     
     @app.route('/import')
     def import_page():

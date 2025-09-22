@@ -404,6 +404,80 @@ class DatabaseManager:
             conn.commit()
             return cursor.lastrowid
 
+    def get_task_group_performance(self, model_key=None, limit_groups=5):
+        """Get task group performance statistics for comparison charts."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Get task group performance for all models
+            cursor.execute("""
+                SELECT 
+                    m.model_key,
+                    m.name,
+                    t.task_group,
+                    AVG(CASE WHEN o.quality_score IS NOT NULL THEN o.quality_score ELSE 0 END) as avg_score,
+                    COUNT(o.output_id) as task_count
+                FROM models m
+                LEFT JOIN outputs o ON m.model_key = o.model_key
+                LEFT JOIN tasks t ON o.task_id = t.task_id
+                WHERE t.task_group IS NOT NULL
+                    AND t.task_id != 'research_018'  -- Exclude research task from comparison
+                GROUP BY m.model_key, m.name, t.task_group
+                HAVING task_count > 0
+                ORDER BY t.task_group, avg_score DESC
+            """)
+            
+            results = cursor.fetchall()
+            
+            # Organize results by task group
+            task_groups = {}
+            for model_key_db, name, task_group, avg_score, task_count in results:
+                if task_group not in task_groups:
+                    task_groups[task_group] = []
+                task_groups[task_group].append({
+                    'model_key': model_key_db,
+                    'name': name,
+                    'avg_score': float(avg_score) if avg_score else 0.0,
+                    'task_count': task_count
+                })
+            
+            # Limit to specified number of task groups
+            from config import TASK_GROUPS
+            limited_groups = TASK_GROUPS[:limit_groups]
+            
+            # Filter and prepare comparison data
+            comparison_data = {}
+            for group in limited_groups:
+                if group in task_groups:
+                    # Sort models by score for this group
+                    sorted_models = sorted(task_groups[group], key=lambda x: x['avg_score'], reverse=True)
+                    
+                    if model_key:
+                        # Find target model and get surrounding models for comparison
+                        target_model = next((m for m in sorted_models if m['model_key'] == model_key), None)
+                        if target_model:
+                            target_index = sorted_models.index(target_model)
+                            
+                            # Get 2-3 models before and after target model
+                            start_idx = max(0, target_index - 2)
+                            end_idx = min(len(sorted_models), target_index + 3)
+                            comparison_models = sorted_models[start_idx:end_idx]
+                            
+                            comparison_data[group] = {
+                                'models': comparison_models,
+                                'target_model': target_model,
+                                'target_index': target_index - start_idx
+                            }
+                    else:
+                        # Return top 5 models for each group
+                        comparison_data[group] = {
+                            'models': sorted_models[:5],
+                            'target_model': None,
+                            'target_index': -1
+                        }
+            
+            return comparison_data
+
 
 def init_database_cli():
     """CLI function to initialize database."""

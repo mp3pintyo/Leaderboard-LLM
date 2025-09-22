@@ -125,6 +125,37 @@
             </div>
         </div>
         
+        <!-- Task Group Performance Comparison -->
+        {% if task_group_data %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Task Group Performance Comparison</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted mb-4">Comparison with similar-performing models across different task categories</p>
+                        
+                        <div class="row">
+                            {% for group_name, group_data in task_group_data.items() %}
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-light">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">{{ group_name|title|replace('_', ' ') }}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="chart-{{ group_name }}" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
         <!-- Per-Task Performance -->
         <div class="row">
             <div class="col-md-12">
@@ -192,4 +223,104 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Chart.js for task group performance charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% if task_group_data %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Task group performance charts
+    const taskGroupData = {{ task_group_data|tojson }};
+    const targetModel = "{{ model.name }}";
+    
+    // Color scheme for charts
+    const colors = {
+        target: 'rgba(255, 99, 132, 0.8)',     // Red for target model
+        others: 'rgba(54, 162, 235, 0.6)',     // Blue for other models
+        border: 'rgba(255, 255, 255, 1)'
+    };
+    
+    Object.keys(taskGroupData).forEach(groupName => {
+        const data = taskGroupData[groupName];
+        const canvas = document.getElementById(`chart-${groupName}`);
+        
+        if (!canvas || !data.models) return;
+        
+        const ctx = canvas.getContext('2d');
+        
+        // Prepare chart data
+        const labels = data.models.map(model => {
+            // Truncate long model names
+            return model.name.length > 15 ? model.name.substring(0, 15) + '...' : model.name;
+        });
+        
+        const scores = data.models.map(model => model.avg_score);
+        
+        // Color bars - highlight target model
+        const backgroundColors = data.models.map((model, index) => {
+            return model.name === targetModel ? colors.target : colors.others;
+        });
+        
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Average Quality Score',
+                    data: scores,
+                    backgroundColor: backgroundColors,
+                    borderColor: colors.border,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                // Show full model name in tooltip
+                                return data.models[context[0].dataIndex].name;
+                            },
+                            label: function(context) {
+                                const score = context.parsed.y;
+                                const taskCount = data.models[context.dataIndex].task_count;
+                                return `Score: ${score.toFixed(1)}/10 (${taskCount} tasks)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        title: {
+                            display: true,
+                            text: 'Quality Score (0-10)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Models'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                }
+            }
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}
