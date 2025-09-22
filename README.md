@@ -13,7 +13,8 @@ A Flask-based web application for comparing Large Language Model (LLM) performan
 - ⚙️ **Customizable Columns** - Personalize leaderboard view with column selection settings
 - 🔄 **Side-by-Side Comparison** - View model outputs for the same task simultaneously  
 - 📊 **Detailed Analytics** - Per-model and per-task performance breakdowns
-- 📁 **Excel Import** - Easy data import from Excel/CSV files with configurable mapping
+- � **Task Group Performance Charts** - Visual comparison charts on model detail pages
+- �📁 **Excel Import** - Easy data import from Excel/CSV files with configurable mapping
 - 🔍 **Advanced Filtering** - Filter by open source, task groups, languages, metrics, and more
 - 📈 **Quality Score System** - Human evaluation scoring (0-10) with research task exclusion
 - 🌐 **REST API** - Full API access for programmatic usage
@@ -154,7 +155,7 @@ python scripts\import_excel.py your_data.xlsx --mapping data\custom_mapping.json
 - `/` - Leaderboard with filtering options
 - `/side-by-side` - Side-by-side model comparison  
 - `/settings` - Customize leaderboard column display
-- `/model/<model_key>` - Detailed model performance
+- `/model/<model_key>` - Detailed model performance with task group charts
 
 **Column Customization:**
 The Settings page allows you to:
