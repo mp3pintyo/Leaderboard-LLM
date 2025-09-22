@@ -493,6 +493,59 @@ class DatabaseManager:
             
             return comparison_data
 
+    def get_task_performance(self, task_id, selected_model_keys=None, limit=12):
+        """Get performance data for a specific task across all models."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Get task performance for all models
+            cursor.execute("""
+                SELECT 
+                    m.model_key,
+                    m.name,
+                    o.tokens,
+                    AVG(CASE WHEN me.metric_name = 'quality_score' AND me.metric_value IS NOT NULL 
+                             THEN me.metric_value ELSE 0 END) as quality_score,
+                    AVG(CASE WHEN me.metric_name = 'rouge_l' AND me.metric_value IS NOT NULL 
+                             THEN me.metric_value END) as rouge_l,
+                    AVG(CASE WHEN me.metric_name = 'bert_score' AND me.metric_value IS NOT NULL 
+                             THEN me.metric_value END) as bert_score
+                FROM models m
+                LEFT JOIN outputs o ON m.model_key = o.model_key AND o.task_id = ?
+                LEFT JOIN metrics me ON o.id = me.output_id
+                WHERE o.task_id IS NOT NULL
+                GROUP BY m.model_key, m.name, o.tokens
+                ORDER BY quality_score DESC
+                LIMIT ?
+            """, (task_id, limit))
+            
+            results = cursor.fetchall()
+            
+            models_data = []
+            selected_models_data = []
+            
+            for model_key, name, tokens, quality_score, rouge_l, bert_score in results:
+                model_data = {
+                    'model_key': model_key,
+                    'name': name,
+                    'tokens': tokens,
+                    'quality_score': float(quality_score) if quality_score else 0.0,
+                    'rouge_l': float(rouge_l) if rouge_l else None,
+                    'bert_score': float(bert_score) if bert_score else None
+                }
+                
+                models_data.append(model_data)
+                
+                # If this model is selected, also add to selected list
+                if selected_model_keys and model_key in selected_model_keys:
+                    selected_models_data.append(model_data)
+            
+            return {
+                'task_id': task_id,
+                'all_models': models_data,
+                'selected_models': selected_models_data
+            }
+
 
 def init_database_cli():
     """CLI function to initialize database."""

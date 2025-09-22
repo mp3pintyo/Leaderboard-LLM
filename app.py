@@ -135,6 +135,7 @@ def create_app() -> Flask:
         
         task = None
         outputs = []
+        task_performance_data = None
         
         if task_id:
             # Get task info
@@ -143,13 +144,17 @@ def create_app() -> Flask:
             if task:
                 # Get outputs for comparison
                 outputs = db.get_task_outputs(task_id, model_keys if model_keys else None)
+                
+                # Get task performance data for chart
+                task_performance_data = db.get_task_performance(task_id, model_keys)
         
         return render_template('side_by_side.html',
                              task=task,
                              tasks=tasks,
                              outputs=outputs,
                              models=models,
-                             selected_models=model_keys)
+                             selected_models=model_keys,
+                             task_performance_data=task_performance_data)
     
     @app.route('/model/<model_key>')
     def model_detail(model_key: str):
