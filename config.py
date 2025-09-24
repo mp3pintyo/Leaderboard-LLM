@@ -254,6 +254,20 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-09-22',
         'image_input': True
+    },
+    'llm-018': {
+        'name': 'Grok 4 Fast',
+        'api_id': 'grok-4-fast',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'xAI',
+        'parameters': 0,  # Billion parameters
+        'context_window': 2000,  # Thousand tokens (K)
+        'release_date': '2025-09-19',
+        'image_input': True
     }
 }
 
