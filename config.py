@@ -240,6 +240,20 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-09-17',
         'image_input': True
+    },
+    'llm-017': {
+        'name': 'DeepSeek-V3.1-Terminus',
+        'api_id': 'deepseek-v3-1-terminus',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'DeepSeek AI',
+        'parameters': 671,  # Billion parameters
+        'context_window': 128,  # Thousand tokens (K)
+        'release_date': '2025-09-22',
+        'image_input': True
     }
 }
 
