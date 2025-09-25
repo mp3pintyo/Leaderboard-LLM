@@ -116,7 +116,8 @@ d:\AI\Leaderboard-LLM-v2\
 ├── docs/
 │   ├── SETTINGS.md           # Column customization documentation
 │   ├── SETTINGS_IMPLEMENTATION.md # Settings technical details
-│   └── TASK_GROUP_CHARTS.md  # Performance charts documentation
+│   ├── TASK_GROUP_CHARTS.md  # Performance charts documentation
+│   └── PRICING.md            # Model pricing feature documentation
 ```
 
 ## Usage Guide
@@ -823,6 +824,7 @@ Detailed documentation is available in the `docs/` folder:
 - **[SETTINGS.md](docs/SETTINGS.md)** - Complete guide to column customization and filter settings
 - **[SETTINGS_IMPLEMENTATION.md](docs/SETTINGS_IMPLEMENTATION.md)** - Technical implementation details for settings functionality
 - **[TASK_GROUP_CHARTS.md](docs/TASK_GROUP_CHARTS.md)** - Documentation for performance visualization charts
+- **[PRICING.md](docs/PRICING.md)** - Comprehensive model pricing feature documentation
 
 ### Key Features Documented
 
