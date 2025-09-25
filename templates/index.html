@@ -291,6 +291,32 @@
                                         <span class="text-muted">N/A</span>
                                     {% endif %}
                                 </td>
+                            {% elif col_key == 'input_price' %}
+                                <td>
+                                    {% if model.meta.get('input_price') %}
+                                        {% for tier in model.meta.input_price %}
+                                            <div class="small">
+                                                {% if tier.threshold != 'all' %}{{ tier.threshold }}: {% endif %}
+                                                <strong>{{ tier.price }}</strong>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                            {% elif col_key == 'output_price' %}
+                                <td>
+                                    {% if model.meta.get('output_price') %}
+                                        {% for tier in model.meta.output_price %}
+                                            <div class="small">
+                                                {% if tier.threshold != 'all' %}{{ tier.threshold }}: {% endif %}
+                                                <strong>{{ tier.price }}</strong>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
                             {% elif col_key == 'actions' %}
                                 <td>
                                     <a href="{{ url_for('model_detail', model_key=model.model_key) }}" 

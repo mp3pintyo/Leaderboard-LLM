@@ -29,7 +29,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 1000,  # Billion parameters
         'context_window': 262,  # Thousand tokens (K)
         'release_date': '2025-09-01',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
+        'output_price': [{'threshold': '≤128K', 'price': '$2.40'}, {'threshold': '>128K', 'price': '$6.00'}]
     },
     'llm-002': {
         'name': 'GPT-4o',
@@ -43,7 +45,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 200,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-02-01',
-        'image_input': True
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$5.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
     },
     'llm-003': {
         'name': 'GLM-4.5-106B-A12B Air',
@@ -57,7 +61,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 106,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-07-28',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-004': {
         'name': 'GLM-4.5-355B-A32B',
@@ -71,7 +77,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 355,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-07-28',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-005': {
         'name': 'Kimi K2 0905',
@@ -85,7 +93,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 1000,  # Billion parameters
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-09-01',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': '≤64K', 'price': '$0.50'}, {'threshold': '>64K', 'price': '$1.50'}],
+        'output_price': [{'threshold': '≤64K', 'price': '$1.50'}, {'threshold': '>64K', 'price': '$4.50'}]
     },
     'llm-006': {
         'name': 'Cogito V2 Preview Deepseek 671B',
@@ -113,7 +123,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 36,  # Billion parameters
         'context_window': 512,  # Thousand tokens (K)
         'release_date': '2025-08-20',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-008': {
         'name': 'Qwen3-Next-80B-A3B-Thinking',
@@ -126,8 +138,10 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'provider': 'Alibaba Cloud',
         'parameters': 80,  # Billion parameters
         'context_window': 262,  # Thousand tokens (K)
-        'release_date': '2025-09-09',
-        'image_input': False
+        'release_date': '2025-09-01',
+        'image_input': False,
+        'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
+        'output_price': [{'threshold': '≤128K', 'price': '$2.40'}, {'threshold': '>128K', 'price': '$6.00'}]
     },
     'llm-009': {
         'name': 'Qwen3-Next-80B-A3B-Instruct',
@@ -183,7 +197,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 1700,  # Billion parameters
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-07-09',
-        'image_input': True
+        'image_input': True,
+        'input_price': [{'threshold': '≤100K', 'price': '$2.50'}, {'threshold': '>100K', 'price': '$7.50'}],
+        'output_price': [{'threshold': '≤100K', 'price': '$10.00'}, {'threshold': '>100K', 'price': '$30.00'}]
     },
     'llm-013': {
         'name': 'Kimi K2',
@@ -195,9 +211,11 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'tags': ['general'],  # Több tag
         'provider': 'Moonshot AI',
         'parameters': 1000,  # Billion parameters
-        'context_window': 128,  # Thousand tokens (K)
-        'release_date': '2025-07-11',
-        'image_input': False
+        'context_window': 256,  # Thousand tokens (K)
+        'release_date': '2025-09-01',
+        'image_input': False,
+        'input_price': [{'threshold': '≤64K', 'price': '$0.50'}, {'threshold': '>64K', 'price': '$1.50'}],
+        'output_price': [{'threshold': '≤64K', 'price': '$1.50'}, {'threshold': '>64K', 'price': '$4.50'}]
     },
     'llm-014': {
         'name': 'DeepSeek-TNG R1T2 Chimera',
@@ -236,10 +254,12 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'languages': ['en'],  # Több nyelv
         'tags': ['general'],  # Több tag
         'provider': 'Mistral AI',
-        'parameters': 24,  # Billion parameters
+        'parameters': 200,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
-        'release_date': '2025-09-17',
-        'image_input': True
+        'release_date': '2025-02-01',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$5.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
     },
     'llm-017': {
         'name': 'DeepSeek-V3.1-Terminus',
@@ -281,7 +301,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 1000,  # Billion parameters
         'context_window': 262,  # Thousand tokens (K)
         'release_date': '2025-09-23',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
+        'output_price': [{'threshold': '≤128K', 'price': '$2.40'}, {'threshold': '>128K', 'price': '$6.00'}]
     }
 }
 
@@ -349,7 +371,9 @@ LEADERBOARD_COLUMNS = {
     'context_window': {'label': 'Context', 'enabled': True, 'order': 13},
     'image_input': {'label': 'Image Input', 'enabled': True, 'order': 14},
     'release_date': {'label': 'Release Date', 'enabled': False, 'order': 15},
-    'actions': {'label': 'Actions', 'enabled': True, 'order': 16}
+    'input_price': {'label': 'Input Price', 'enabled': False, 'order': 16},
+    'output_price': {'label': 'Output Price', 'enabled': False, 'order': 17},
+    'actions': {'label': 'Actions', 'enabled': True, 'order': 18}
 }
 
 # Filter Settings Configuration

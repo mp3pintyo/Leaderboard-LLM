@@ -61,7 +61,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <p><strong>Languages:</strong> 
                                     {% for lang in model.meta.get('languages', []) %}
                                         <span class="badge bg-primary">{{ lang }}</span>
@@ -72,6 +72,33 @@
                                         <span class="badge bg-secondary">{{ tag }}</span>
                                     {% endfor %}
                                 </p>
+                            </div>
+                            <div class="col-md-6">
+                                {% if model.meta.get('input_price') %}
+                                <p><strong>Input Price:</strong></p>
+                                <ul class="list-unstyled">
+                                    {% for tier in model.meta.input_price %}
+                                    <li class="small">
+                                        {% if tier.threshold != 'all' %}<strong>{{ tier.threshold }}:</strong> {% endif %}
+                                        <span class="text-primary">{{ tier.price }}</span>
+                                        {% if not tier.price.startswith('Free') %} / 1M tokens{% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                
+                                {% if model.meta.get('output_price') %}
+                                <p><strong>Output Price:</strong></p>
+                                <ul class="list-unstyled">
+                                    {% for tier in model.meta.output_price %}
+                                    <li class="small">
+                                        {% if tier.threshold != 'all' %}<strong>{{ tier.threshold }}:</strong> {% endif %}
+                                        <span class="text-success">{{ tier.price }}</span>
+                                        {% if not tier.price.startswith('Free') %} / 1M tokens{% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
