@@ -6,7 +6,8 @@
 - 📊 **Detailed Analytics** - Per-model and per-task performance breakdowns
 - 📈 **Task Group Performance Charts** - Visual comparison charts on model detail pages showing 8 models (target + 7 others)
 - 🎯 **Task Performance Overview** - Interactive Chart.js visualization on comparison pages showing up to 12 models
-- 📁 **Excel Import** - Easy data import from Excel/CSV files with configurable mapping
+- � **Model Pricing Information** - Support for complex pricing tiers (free, flat rate, context-based)
+- �📁 **Excel Import** - Easy data import from Excel/CSV files with configurable mapping
 - 🔍 **Advanced Filtering** - Filter by open source, task groups, languages, metrics, and more
 - 🔢 **Quality Score System** - Human evaluation scoring (0-10) with research task exclusion
 - 🌐 **REST API** - Full API access for programmatic usage
@@ -112,6 +113,10 @@ d:\AI\Leaderboard-LLM-v2\
 └── tests/
     ├── test_app.py           # Unit tests
     └── requirements-test.txt # Test dependencies
+├── docs/
+│   ├── SETTINGS.md           # Column customization documentation
+│   ├── SETTINGS_IMPLEMENTATION.md # Settings technical details
+│   └── TASK_GROUP_CHARTS.md  # Performance charts documentation
 ```
 
 ## Usage Guide
@@ -192,6 +197,7 @@ The Settings page allows you to:
 - Model information (Provider, Open Source, Parameters, Release Date)
 - Performance metrics (Quality Score, ROUGE-L, BERTScore)
 - Capabilities (Reasoning, Image Input, Context Window, Tags)
+- Pricing information (Input Price, Output Price with tier support)
 - Statistics (Tasks completed, Average tokens)
 
 **Filtering Options:**
@@ -367,9 +373,39 @@ MODELS = {
         'languages': ['en', 'hu'],
         'tags': ['instruction', 'general'],
         'provider': 'Your Organization',
-        'parameters': '7B'
+        'parameters': '7B',
+        'context_window': '128K',
+        'release_date': '2024-01-01',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$2.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$6.00'}]
     }
 }
+```
+
+### Pricing Configuration
+
+The application supports flexible pricing structures:
+
+```python
+# Free model (open source)
+'input_price': [{'threshold': 'all', 'price': 'Free'}],
+'output_price': [{'threshold': 'all', 'price': 'Free'}]
+
+# Flat rate pricing
+'input_price': [{'threshold': 'all', 'price': '$5.00'}],
+'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+
+# Tiered pricing based on context window
+'input_price': [
+    {'threshold': '≤128K', 'price': '$1.20'},
+    {'threshold': '>128K', 'price': '$3.00'}
+],
+'output_price': [
+    {'threshold': '≤128K', 'price': '$2.40'},
+    {'threshold': '>128K', 'price': '$6.00'}
+]
+```
 ```
 
 ### Database Configuration
@@ -726,6 +762,76 @@ flask run --host=0.0.0.0 --port=5001
 - Use `--no-metrics` flag for faster imports during development
 - Enable database indexing for large-scale deployments
 - Consider using PostgreSQL for production environments
+
+## Model Pricing Configuration
+
+The application now supports comprehensive pricing information for models with flexible tier structures:
+
+### Pricing Types
+
+**Free Models (Open Source):**
+```python
+'input_price': [{'threshold': 'all', 'price': 'Free'}],
+'output_price': [{'threshold': 'all', 'price': 'Free'}]
+```
+
+**Flat Rate Pricing:**
+```python
+'input_price': [{'threshold': 'all', 'price': '$5.00'}],
+'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+```
+
+**Tiered Pricing (Context-Based):**
+```python
+'input_price': [
+    {'threshold': '≤128K', 'price': '$1.20'},
+    {'threshold': '>128K', 'price': '$3.00'}
+],
+'output_price': [
+    {'threshold': '≤128K', 'price': '$2.40'},
+    {'threshold': '>128K', 'price': '$6.00'}
+]
+```
+
+### Display Features
+
+- **Leaderboard Columns**: Input Price and Output Price columns (toggleable in Settings)
+- **Tier Display**: Shows threshold ranges with corresponding prices
+- **Model Detail Pages**: Complete pricing breakdown with "/1M tokens" notation
+- **Responsive Layout**: Pricing information adapts to screen size
+
+### Configuration
+
+Add pricing to model configurations in `config.py`:
+```python
+MODELS = {
+    'your-model': {
+        'name': 'Your Model Name',
+        # ... other configuration ...
+        'input_price': [{'threshold': 'all', 'price': '$2.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$6.00'}]
+    }
+}
+```
+
+Prices are displayed per 1 million tokens, with support for multiple threshold tiers based on context window usage.
+
+## Documentation
+
+Detailed documentation is available in the `docs/` folder:
+
+- **[SETTINGS.md](docs/SETTINGS.md)** - Complete guide to column customization and filter settings
+- **[SETTINGS_IMPLEMENTATION.md](docs/SETTINGS_IMPLEMENTATION.md)** - Technical implementation details for settings functionality
+- **[TASK_GROUP_CHARTS.md](docs/TASK_GROUP_CHARTS.md)** - Documentation for performance visualization charts
+
+### Key Features Documented
+
+- **Column Customization**: How to show/hide leaderboard columns via Settings page
+- **Filter Controls**: Customizable filter display options
+- **Performance Charts**: Interactive Chart.js visualizations on model detail pages
+- **Pricing Display**: Multi-tier pricing support with threshold-based display
+- **Session Persistence**: How user preferences are stored and managed
+- **API Endpoints**: RESTful APIs for settings and configuration management
 
 ## Contributing
 
