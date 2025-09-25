@@ -31,7 +31,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'release_date': '2025-09-01',
         'image_input': False,
         'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
-        'output_price': [{'threshold': '≤128K', 'price': '$2.40'}, {'threshold': '>128K', 'price': '$6.00'}]
+        'output_price': [{'threshold': '≤128K', 'price': '$6.00'}, {'threshold': '>128K', 'price': '$15.00'}]
     },
     'llm-002': {
         'name': 'GPT-4o',
@@ -46,8 +46,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-02-01',
         'image_input': True,
-        'input_price': [{'threshold': 'all', 'price': '$5.00'}],
-        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+        'input_price': [{'threshold': 'all', 'price': '$2.50'}],
+        'output_price': [{'threshold': 'all', 'price': '$10.00'}]
     },
     'llm-003': {
         'name': 'GLM-4.5-106B-A12B Air',
@@ -62,8 +62,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-07-28',
         'image_input': False,
-        'input_price': [{'threshold': 'all', 'price': 'Free'}],
-        'output_price': [{'threshold': 'all', 'price': 'Free'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.14'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.86'}]
     },
     'llm-004': {
         'name': 'GLM-4.5-355B-A32B',
@@ -78,8 +78,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-07-28',
         'image_input': False,
-        'input_price': [{'threshold': 'all', 'price': 'Free'}],
-        'output_price': [{'threshold': 'all', 'price': 'Free'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.40'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.60'}]
     },
     'llm-005': {
         'name': 'Kimi K2 0905',
@@ -94,8 +94,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-09-01',
         'image_input': False,
-        'input_price': [{'threshold': '≤64K', 'price': '$0.50'}, {'threshold': '>64K', 'price': '$1.50'}],
-        'output_price': [{'threshold': '≤64K', 'price': '$1.50'}, {'threshold': '>64K', 'price': '$4.50'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.38'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.52'}]
     },
     'llm-006': {
         'name': 'Cogito V2 Preview Deepseek 671B',
@@ -109,7 +109,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 671,  # Billion parameters
         'context_window': 163,  # Thousand tokens (K)
         'release_date': '2025-07-31',
-        'image_input': True
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$1.25'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.25'}]
     },
     'llm-007': {
         'name': 'Seed-OSS-36B',
@@ -124,8 +126,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 512,  # Thousand tokens (K)
         'release_date': '2025-08-20',
         'image_input': False,
-        'input_price': [{'threshold': 'all', 'price': 'Free'}],
-        'output_price': [{'threshold': 'all', 'price': 'Free'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.16'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.65'}]
     },
     'llm-008': {
         'name': 'Qwen3-Next-80B-A3B-Thinking',
@@ -155,7 +157,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 80,  # Billion parameters
         'context_window': 262,  # Thousand tokens (K)
         'release_date': '2025-09-09',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.10'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.80'}]
     },
     'llm-010': {
         'name': 'gpt-oss-120b',
@@ -169,7 +173,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 120,  # Billion parameters
         'context_window': 131,  # Thousand tokens (K)
         'release_date': '2025-08-04',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.05'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.25'}]
     },
     'llm-011': {
         'name': 'Qwen3-235B-A22B-Instruct-2507',
@@ -183,7 +189,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 235,  # Billion parameters
         'context_window': 262,  # Thousand tokens (K)
         'release_date': '2025-07-21',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.09'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.60'}]
     },
     'llm-012': {
         'name': 'Grok 4',
@@ -198,11 +206,11 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-07-09',
         'image_input': True,
-        'input_price': [{'threshold': '≤100K', 'price': '$2.50'}, {'threshold': '>100K', 'price': '$7.50'}],
-        'output_price': [{'threshold': '≤100K', 'price': '$10.00'}, {'threshold': '>100K', 'price': '$30.00'}]
+        'input_price': [{'threshold': '≤128K', 'price': '$3.00'}, {'threshold': '>128K', 'price': '$6.00'}],
+        'output_price': [{'threshold': '≤128K', 'price': '$15.00'}, {'threshold': '>128K', 'price': '$30.00'}]
     },
     'llm-013': {
-        'name': 'Kimi K2',
+        'name': 'Kimi K2 0905',
         'api_id': 'kimi-k2',
         'open_source': True,
         'tokenizer': 'unknown',
@@ -214,8 +222,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 256,  # Thousand tokens (K)
         'release_date': '2025-09-01',
         'image_input': False,
-        'input_price': [{'threshold': '≤64K', 'price': '$0.50'}, {'threshold': '>64K', 'price': '$1.50'}],
-        'output_price': [{'threshold': '≤64K', 'price': '$1.50'}, {'threshold': '>64K', 'price': '$4.50'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.38'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.52'}]
     },
     'llm-014': {
         'name': 'DeepSeek-TNG R1T2 Chimera',
@@ -229,7 +237,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 671,  # Billion parameters
         'context_window': 130,  # Thousand tokens (K)
         'release_date': '2025-07-02',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-015': {
         'name': 'DeepSeek-R1-0528',
@@ -243,7 +253,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 671,  # Billion parameters
         'context_window': 164,  # Thousand tokens (K)
         'release_date': '2025-05-28',
-        'image_input': False
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-016': {
         'name': 'Magistral Small 1.2',
@@ -258,8 +270,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-02-01',
         'image_input': True,
-        'input_price': [{'threshold': 'all', 'price': '$5.00'}],
-        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+        'input_price': [{'threshold': 'all', 'price': '$0.50'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.50'}]
     },
     'llm-017': {
         'name': 'DeepSeek-V3.1-Terminus',
@@ -273,7 +285,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 671,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-09-22',
-        'image_input': True
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$0.27'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.00'}]
     },
     'llm-018': {
         'name': 'Grok 4 Fast',
@@ -287,7 +301,9 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'parameters': 0,  # Billion parameters
         'context_window': 2000,  # Thousand tokens (K)
         'release_date': '2025-09-19',
-        'image_input': True
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-019': {
         'name': 'Qwen3 Max Instruct',
@@ -303,7 +319,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'release_date': '2025-09-23',
         'image_input': False,
         'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
-        'output_price': [{'threshold': '≤128K', 'price': '$2.40'}, {'threshold': '>128K', 'price': '$6.00'}]
+        'output_price': [{'threshold': '≤128K', 'price': '$6.00'}, {'threshold': '>128K', 'price': '$15.00'}]
     }
 }
 
