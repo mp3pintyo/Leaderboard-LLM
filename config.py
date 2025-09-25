@@ -62,8 +62,8 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 128,  # Thousand tokens (K)
         'release_date': '2025-07-28',
         'image_input': False,
-        'input_price': [{'threshold': 'all', 'price': '$0.14'}],
-        'output_price': [{'threshold': 'all', 'price': '$0.86'}]
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
     'llm-004': {
         'name': 'GLM-4.5-355B-A32B',
