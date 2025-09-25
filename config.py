@@ -268,6 +268,20 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'context_window': 2000,  # Thousand tokens (K)
         'release_date': '2025-09-19',
         'image_input': True
+    },
+    'llm-019': {
+        'name': 'Qwen3 Max Instruct',
+        'api_id': 'qwen3-max-instruct',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en', 'hu'],
+        'tags': ['general'],
+        'provider': 'Alibaba Cloud',
+        'parameters': 1000,  # Billion parameters
+        'context_window': 262,  # Thousand tokens (K)
+        'release_date': '2025-09-23',
+        'image_input': False
     }
 }
 
