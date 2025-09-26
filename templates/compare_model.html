@@ -65,11 +65,11 @@
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Parameters:</td>
-                                            <td>{{ model1.meta.get('parameters', 'N/A') }}</td>
+                                            <td>{{ model1.meta.get('parameters', 'N/A') }}{% if model1.meta.get('parameters') != 'N/A' %}B{% endif %}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Context Window:</td>
-                                            <td>{{ model1.meta.get('context', 'N/A') }}</td>
+                                            <td>{{ model1.meta.get('context_window', 'N/A') }}{% if model1.meta.get('context_window') != 'N/A' %}K{% endif %}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Open Source:</td>
@@ -98,6 +98,38 @@
                                                     <span class="badge bg-warning">Yes</span>
                                                 {% else %}
                                                     <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Release Date:</td>
+                                            <td>{{ model1.meta.get('release_date', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Input Price:</td>
+                                            <td>
+                                                {% if model1.meta.get('input_price') %}
+                                                    {% for price_tier in model1.meta.input_price %}
+                                                        <small class="text-muted">{{ price_tier.threshold }}:</small>
+                                                        <span class="badge bg-info">{{ price_tier.price }}</span>
+                                                        {% if not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Output Price:</td>
+                                            <td>
+                                                {% if model1.meta.get('output_price') %}
+                                                    {% for price_tier in model1.meta.output_price %}
+                                                        <small class="text-muted">{{ price_tier.threshold }}:</small>
+                                                        <span class="badge bg-warning">{{ price_tier.price }}</span>
+                                                        {% if not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    N/A
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -195,11 +227,11 @@
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Parameters:</td>
-                                            <td>{{ model2.meta.get('parameters', 'N/A') }}</td>
+                                            <td>{{ model2.meta.get('parameters', 'N/A') }}{% if model2.meta.get('parameters') != 'N/A' %}B{% endif %}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Context Window:</td>
-                                            <td>{{ model2.meta.get('context', 'N/A') }}</td>
+                                            <td>{{ model2.meta.get('context_window', 'N/A') }}{% if model2.meta.get('context_window') != 'N/A' %}K{% endif %}</td>
                                         </tr>
                                         <tr>
                                             <td class="text-muted">Open Source:</td>
@@ -228,6 +260,38 @@
                                                     <span class="badge bg-warning">Yes</span>
                                                 {% else %}
                                                     <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Release Date:</td>
+                                            <td>{{ model2.meta.get('release_date', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Input Price:</td>
+                                            <td>
+                                                {% if model2.meta.get('input_price') %}
+                                                    {% for price_tier in model2.meta.input_price %}
+                                                        <small class="text-muted">{{ price_tier.threshold }}:</small>
+                                                        <span class="badge bg-info">{{ price_tier.price }}</span>
+                                                        {% if not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    N/A
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Output Price:</td>
+                                            <td>
+                                                {% if model2.meta.get('output_price') %}
+                                                    {% for price_tier in model2.meta.output_price %}
+                                                        <small class="text-muted">{{ price_tier.threshold }}:</small>
+                                                        <span class="badge bg-warning">{{ price_tier.price }}</span>
+                                                        {% if not loop.last %}<br>{% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    N/A
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -359,7 +423,7 @@
                                             </td>
                                             <td class="text-center">
                                                 {% if model1_task and model1_task.metrics %}
-                                                    {% if model1_task.metrics.get('quality_score') %}
+                                                    {% if model1_task.metrics.get('quality_score') is not none %}
                                                         <span class="badge bg-success">{{ "%.1f"|format(model1_task.metrics.quality_score) }}</span>
                                                     {% endif %}
                                                     {% if model1_task.tokens %}
@@ -371,7 +435,7 @@
                                             </td>
                                             <td class="text-center">
                                                 {% if model2_task and model2_task.metrics %}
-                                                    {% if model2_task.metrics.get('quality_score') %}
+                                                    {% if model2_task.metrics.get('quality_score') is not none %}
                                                         <span class="badge bg-success">{{ "%.1f"|format(model2_task.metrics.quality_score) }}</span>
                                                     {% endif %}
                                                     {% if model2_task.tokens %}
@@ -463,6 +527,34 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize on page load
     updateModelOptions();
+    
+    // Align Performance Overview sections after models are loaded
+    function alignPerformanceOverview() {
+        const configSections = document.querySelectorAll('.config-section');
+        if (configSections.length === 2) {
+            // Reset any previous height adjustments
+            configSections.forEach(section => {
+                section.style.height = 'auto';
+            });
+            
+            // Wait for content to render, then measure heights
+            setTimeout(() => {
+                const heights = Array.from(configSections).map(section => section.offsetHeight);
+                const maxHeight = Math.max(...heights);
+                
+                // Set both sections to the maximum height
+                configSections.forEach(section => {
+                    section.style.height = maxHeight + 'px';
+                });
+            }, 100);
+        }
+    }
+    
+    // Run alignment after page load
+    alignPerformanceOverview();
+    
+    // Re-align if window is resized
+    window.addEventListener('resize', alignPerformanceOverview);
 });
 </script>
 {% endblock %}
