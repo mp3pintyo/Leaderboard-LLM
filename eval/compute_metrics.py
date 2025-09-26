@@ -75,7 +75,8 @@ class MetricsCalculator:
         if quality_score is not None:
             # Validate score range
             if 0 <= quality_score <= 10:
-                metrics['quality_score'] = round(float(quality_score), 1)
+                # Round to integer for quality scores (0-10 scale)
+                metrics['quality_score'] = float(round(float(quality_score)))
             else:
                 print(f"Warning: Quality score {quality_score} out of range (0-10), skipping")
                 metrics['quality_score'] = None

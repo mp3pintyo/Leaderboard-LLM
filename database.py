@@ -504,17 +504,27 @@ class DatabaseManager:
                     m.model_key,
                     m.name,
                     o.tokens,
-                    AVG(CASE WHEN me.metric_name = 'quality_score' AND me.metric_value IS NOT NULL 
-                             THEN me.metric_value ELSE 0 END) as quality_score,
-                    AVG(CASE WHEN me.metric_name = 'rouge_l' AND me.metric_value IS NOT NULL 
-                             THEN me.metric_value END) as rouge_l,
-                    AVG(CASE WHEN me.metric_name = 'bert_score' AND me.metric_value IS NOT NULL 
-                             THEN me.metric_value END) as bert_score
+                    COALESCE(quality_metrics.metric_value, 0) as quality_score,
+                    rouge_metrics.metric_value as rouge_l,
+                    bert_metrics.metric_value as bert_score
                 FROM models m
                 LEFT JOIN outputs o ON m.model_key = o.model_key AND o.task_id = ?
-                LEFT JOIN metrics me ON o.id = me.output_id
+                LEFT JOIN (
+                    SELECT output_id, metric_value 
+                    FROM metrics 
+                    WHERE metric_name = 'quality_score'
+                ) quality_metrics ON o.id = quality_metrics.output_id
+                LEFT JOIN (
+                    SELECT output_id, metric_value 
+                    FROM metrics 
+                    WHERE metric_name = 'rouge_l'
+                ) rouge_metrics ON o.id = rouge_metrics.output_id
+                LEFT JOIN (
+                    SELECT output_id, metric_value 
+                    FROM metrics 
+                    WHERE metric_name = 'bert_score'
+                ) bert_metrics ON o.id = bert_metrics.output_id
                 WHERE o.task_id IS NOT NULL
-                GROUP BY m.model_key, m.name, o.tokens
                 ORDER BY quality_score DESC
                 LIMIT ?
             """, (task_id, limit))

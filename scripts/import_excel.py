@@ -252,6 +252,18 @@ class ExcelImporter:
             
             for i, output in enumerate(outputs_data):
                 try:
+                    # First, get existing output ID if it exists to clean up old metrics
+                    cursor.execute("""
+                        SELECT id FROM outputs WHERE task_id = ? AND model_key = ?
+                    """, (output['task_id'], output['model_key']))
+                    existing_output = cursor.fetchone()
+                    
+                    if existing_output:
+                        # Delete old metrics for this output to ensure fresh data
+                        cursor.execute("""
+                            DELETE FROM metrics WHERE output_id = ?
+                        """, (existing_output[0],))
+                    
                     cursor.execute("""
                         INSERT OR REPLACE INTO outputs (task_id, model_key, output_text, tokens)
                         VALUES (?, ?, ?, ?)

@@ -968,6 +968,109 @@ For issues or questions:
 - **API Testing**: Use the provided curl examples
 - **Database**: Use the database management utilities for reset/backup operations
 
+## További használat (Advanced Usage)
+
+### Adatbázis teljes resetelése és újraimportálás
+
+**1. Adatbázis resetelése:**
+```powershell
+# Adatbázis törlése
+python -c "import os; os.remove('data/results.db') if os.path.exists('data/results.db') else None"
+
+# Új adatbázis inicializálása
+python database.py
+```
+
+**2. Egyes Excel fájl importálása:**
+```powershell
+# Konkrét Excel fájl importálása
+python scripts/import_excel.py "data/sample_import_template-qwen3maxpreview.xlsx"
+
+# Importálás metrics számítással
+python scripts/import_excel.py "data/your_file.xlsx" --verbose
+
+# Ellenőrzés importálás előtt (dry run)
+python scripts/import_excel.py "data/your_file.xlsx" --dry-run
+```
+
+**3. Batch import (minden Excel fájl egyszerre):**
+```powershell
+# Összes Excel fájl importálása (kivéve template)
+python scripts/batch_import.py --verbose
+
+# Csak bizonyos mintázatú fájlok
+python scripts/batch_import.py --pattern "sample_import_template-*.xlsx" --verbose
+
+# Metrics nélkül (gyorsabb)
+python scripts/batch_import.py --no-metrics
+```
+
+**4. Ellenőrzés:**
+```powershell
+# Adatbázis állapot ellenőrzése
+python -c "from database import DatabaseManager; db = DatabaseManager(); result = db.get_task_performance('language_tasks_001'); print('Models found:', len(result['all_models']))"
+
+# Konkrét modell pontszám ellenőrzése
+python -c "from database import DatabaseManager; db = DatabaseManager(); result = db.get_task_performance('language_tasks_001'); llm001 = [m for m in result['all_models'] if m['model_key'] == 'llm-001']; print('llm-001 score:', llm001[0]['quality_score'] if llm001 else 'Not found')"
+```
+
+### Legutóbbi érték megmaradása
+
+Az importálási rendszer automatikusan biztosítja, hogy:
+- **Dupla importálás esetén**: A legutóbb importált értékek maradnak meg
+- **Régi értékek törlése**: A korábbi metrics bejegyzések automatikusan törlődnek
+- **Egész számok**: A quality_score értékek egész számokra kerekülnek (0-10)
+
+### Batch Import Funkciók
+
+A `scripts/batch_import.py` script automatikusan:
+- ✅ **Megtalálja az összes Excel fájlt** a data mappában
+- ✅ **Kizárja a template fájlt** (`sample_import_template.xlsx`)
+- ✅ **Sorrendben importálja** a fájlokat
+- ✅ **Statisztikákat mutat** (sikeres/sikertelen importok)
+- ✅ **Hibakezelés** minden fájlnál külön
+
+### Hibaelhárítás
+
+**Ha furcsa pontszámokat látsz (pl. 8.5 helyett 8.0):**
+```powershell
+# Teljes reset és újraimportálás
+python -c "import os; os.remove('data/results.db')"
+python database.py
+python scripts/batch_import.py --verbose
+```
+
+**Ha egy modell nem jelenik meg:**
+```powershell
+# Modell konfiguráció frissítése
+python database.py
+
+# Ellenőrzés
+python -c "from database import DatabaseManager; db = DatabaseManager(); models = [m['model_key'] for m in db.get_models()]; print('Available models:', models)"
+```
+
+**Batch import probléma esetén:**
+```powershell
+# Egyenként importálás
+Get-ChildItem data/sample_import_template-*.xlsx | ForEach-Object { 
+    python scripts/import_excel.py $_.FullName --verbose 
+}
+```
+
+### Fejlesztői használat
+
+**Új Excel fájl hozzáadása:**
+1. Tedd a fájlt a `data/` mappába
+2. Nevezd el `sample_import_template-{modell_név}.xlsx` formátumban
+3. Futtasd: `python scripts/batch_import.py --verbose`
+
+**Modell konfiguráció módosítása:**
+1. Szerkeszd a `config.py` fájlt
+2. Futttasd: `python database.py`
+3. Importálj újra: `python scripts/batch_import.py --verbose`
+
+Az importálási rendszer garantálja, hogy mindig a legfrissebb értékek maradnak meg az adatbázisban.
+
 ## Acknowledgments
 
 - Built with Flask and Bootstrap for modern web experience
