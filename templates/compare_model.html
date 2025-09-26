@@ -1,0 +1,468 @@
+{% extends "base.html" %}
+
+{% block title %}Model Comparison{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <h1 class="mb-4">
+            <i class="fas fa-balance-scale text-info"></i>
+            Model Comparison
+        </h1>
+        
+        <!-- Model Selection Form -->
+        <div class="filter-section">
+            <h5><i class="fas fa-filter"></i> Select Models to Compare</h5>
+            <form method="GET" action="{{ url_for('compare_model') }}">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="form-label">First Model</label>
+                        <select name="model1" class="form-select" onchange="this.form.submit()">
+                            <option value="">Choose first model...</option>
+                            {% for model in models %}
+                            <option value="{{ model.model_key }}" {% if selected_model1 == model.model_key %}selected{% endif %}>
+                                {{ model.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Second Model</label>
+                        <select name="model2" class="form-select" onchange="this.form.submit()">
+                            <option value="">Choose second model...</option>
+                            {% for model in models %}
+                            <option value="{{ model.model_key }}" {% if selected_model2 == model.model_key %}selected{% endif %}>
+                                {{ model.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        {% if model1 and model2 %}
+        <!-- Model Comparison Grid -->
+        <div class="row">
+            <!-- Model 1 Column -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-robot"></i> {{ model1.name }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Model Configuration -->
+                        <div class="config-section mb-4">
+                            <h6><i class="fas fa-cog"></i> Configuration</h6>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="text-muted">Provider:</td>
+                                            <td><span class="badge bg-secondary">{{ model1.meta.get('provider', 'N/A') }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Parameters:</td>
+                                            <td>{{ model1.meta.get('parameters', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Context Window:</td>
+                                            <td>{{ model1.meta.get('context', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Open Source:</td>
+                                            <td>
+                                                {% if model1.meta.get('open_source') %}
+                                                    <span class="badge bg-success">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Reasoning:</td>
+                                            <td>
+                                                {% if model1.meta.get('reasoning') %}
+                                                    <span class="badge bg-info">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Image Input:</td>
+                                            <td>
+                                                {% if model1.meta.get('image_input') %}
+                                                    <span class="badge bg-warning">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if model1.meta.get('languages') %}
+                                        <tr>
+                                            <td class="text-muted">Languages:</td>
+                                            <td>
+                                                {% for lang in model1.meta.languages %}
+                                                    <span class="badge bg-light text-dark">{{ lang }}</span>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% if model1.meta.get('tags') %}
+                                        <tr>
+                                            <td class="text-muted">Tags:</td>
+                                            <td>
+                                                {% for tag in model1.meta.tags %}
+                                                    <span class="badge bg-outline-primary">{{ tag }}</span>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Task Group Performance -->
+                        <div class="performance-section">
+                            <h6><i class="fas fa-chart-bar"></i> Performance Overview</h6>
+                            {% if model1.task_groups %}
+                                <div class="row">
+                                    {% for group_name, group_data in model1.task_groups.items() %}
+                                        {% if group_data.total_tasks > 0 %}
+                                        <div class="col-12 mb-3">
+                                            <div class="card">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ group_name.replace('_', ' ').title() }}</strong>
+                                                            <br><small class="text-muted">{{ group_data.total_tasks }} tasks</small>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <div class="mb-1">
+                                                                <small class="text-muted">Quality:</small>
+                                                                <span class="badge bg-success">{{ "%.1f"|format(group_data.avg_quality_score) }}</span>
+                                                            </div>
+                                                            {% if group_data.avg_rouge_l > 0 %}
+                                                            <div class="mb-1">
+                                                                <small class="text-muted">ROUGE-L:</small>
+                                                                <span class="badge bg-info">{{ "%.3f"|format(group_data.avg_rouge_l) }}</span>
+                                                            </div>
+                                                            {% endif %}
+                                                            {% if group_data.avg_bert_score > 0 %}
+                                                            <div>
+                                                                <small class="text-muted">BERT:</small>
+                                                                <span class="badge bg-secondary">{{ "%.3f"|format(group_data.avg_bert_score) }}</span>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light">No test results available</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Model 2 Column -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-robot"></i> {{ model2.name }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Model Configuration -->
+                        <div class="config-section mb-4">
+                            <h6><i class="fas fa-cog"></i> Configuration</h6>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table class="table table-sm table-borderless">
+                                        <tr>
+                                            <td class="text-muted">Provider:</td>
+                                            <td><span class="badge bg-secondary">{{ model2.meta.get('provider', 'N/A') }}</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Parameters:</td>
+                                            <td>{{ model2.meta.get('parameters', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Context Window:</td>
+                                            <td>{{ model2.meta.get('context', 'N/A') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Open Source:</td>
+                                            <td>
+                                                {% if model2.meta.get('open_source') %}
+                                                    <span class="badge bg-success">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Reasoning:</td>
+                                            <td>
+                                                {% if model2.meta.get('reasoning') %}
+                                                    <span class="badge bg-info">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-muted">Image Input:</td>
+                                            <td>
+                                                {% if model2.meta.get('image_input') %}
+                                                    <span class="badge bg-warning">Yes</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">No</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% if model2.meta.get('languages') %}
+                                        <tr>
+                                            <td class="text-muted">Languages:</td>
+                                            <td>
+                                                {% for lang in model2.meta.languages %}
+                                                    <span class="badge bg-light text-dark">{{ lang }}</span>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% if model2.meta.get('tags') %}
+                                        <tr>
+                                            <td class="text-muted">Tags:</td>
+                                            <td>
+                                                {% for tag in model2.meta.tags %}
+                                                    <span class="badge bg-outline-primary">{{ tag }}</span>
+                                                {% endfor %}
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Task Group Performance -->
+                        <div class="performance-section">
+                            <h6><i class="fas fa-chart-bar"></i> Performance Overview</h6>
+                            {% if model2.task_groups %}
+                                <div class="row">
+                                    {% for group_name, group_data in model2.task_groups.items() %}
+                                        {% if group_data.total_tasks > 0 %}
+                                        <div class="col-12 mb-3">
+                                            <div class="card">
+                                                <div class="card-body py-2">
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ group_name.replace('_', ' ').title() }}</strong>
+                                                            <br><small class="text-muted">{{ group_data.total_tasks }} tasks</small>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <div class="mb-1">
+                                                                <small class="text-muted">Quality:</small>
+                                                                <span class="badge bg-success">{{ "%.1f"|format(group_data.avg_quality_score) }}</span>
+                                                            </div>
+                                                            {% if group_data.avg_rouge_l > 0 %}
+                                                            <div class="mb-1">
+                                                                <small class="text-muted">ROUGE-L:</small>
+                                                                <span class="badge bg-info">{{ "%.3f"|format(group_data.avg_rouge_l) }}</span>
+                                                            </div>
+                                                            {% endif %}
+                                                            {% if group_data.avg_bert_score > 0 %}
+                                                            <div>
+                                                                <small class="text-muted">BERT:</small>
+                                                                <span class="badge bg-secondary">{{ "%.3f"|format(group_data.avg_bert_score) }}</span>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-light">No test results available</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detailed Task Results -->
+        {% if model1.task_results or model2.task_results %}
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fas fa-tasks"></i> Detailed Task Results</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Task</th>
+                                        <th>Group</th>
+                                        <th class="text-center">{{ model1.name[:20] }}...</th>
+                                        <th class="text-center">{{ model2.name[:20] }}...</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% set all_tasks = [] %}
+                                    {% for task in model1.task_results %}
+                                        {% if task.task_id not in all_tasks %}
+                                            {% set _ = all_tasks.append(task.task_id) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% for task in model2.task_results %}
+                                        {% if task.task_id not in all_tasks %}
+                                            {% set _ = all_tasks.append(task.task_id) %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% for task_id in all_tasks %}
+                                        {% set model1_task = model1.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                                        {% set model2_task = model2.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                                        
+                                        <tr>
+                                            <td>
+                                                <strong>{{ task_id }}</strong>
+                                                {% if model1_task %}
+                                                    <br><small class="text-muted">{{ model1_task.task_name[:50] }}...</small>
+                                                {% elif model2_task %}
+                                                    <br><small class="text-muted">{{ model2_task.task_name[:50] }}...</small>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                {% if model1_task %}
+                                                    <span class="badge bg-secondary">{{ model1_task.task_group or 'N/A' }}</span>
+                                                {% elif model2_task %}
+                                                    <span class="badge bg-secondary">{{ model2_task.task_group or 'N/A' }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if model1_task and model1_task.metrics %}
+                                                    {% if model1_task.metrics.get('quality_score') %}
+                                                        <span class="badge bg-success">{{ "%.1f"|format(model1_task.metrics.quality_score) }}</span>
+                                                    {% endif %}
+                                                    {% if model1_task.tokens %}
+                                                        <br><small class="text-muted">{{ model1_task.tokens }} tokens</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted">No data</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-center">
+                                                {% if model2_task and model2_task.metrics %}
+                                                    {% if model2_task.metrics.get('quality_score') %}
+                                                        <span class="badge bg-success">{{ "%.1f"|format(model2_task.metrics.quality_score) }}</span>
+                                                    {% endif %}
+                                                    {% if model2_task.tokens %}
+                                                        <br><small class="text-muted">{{ model2_task.tokens }} tokens</small>
+                                                    {% endif %}
+                                                {% else %}
+                                                    <span class="text-muted">No data</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% elif selected_model1 or selected_model2 %}
+        <!-- Partial selection -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Select both models to see comparison</strong>
+        </div>
+        
+        {% else %}
+        <!-- No models selected -->
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <strong>Get Started:</strong> Select two models above to compare their configurations and performance.
+        </div>
+        
+        <!-- Popular comparisons -->
+        <div class="row">
+            <div class="col-md-12">
+                <h5>Popular Model Comparisons:</h5>
+                <div class="row">
+                    {% for i in range(0, models|length - 1, 2) %}
+                        {% if i + 1 < models|length %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ url_for('compare_model') }}?model1={{ models[i].model_key }}&model2={{ models[i+1].model_key }}" 
+                               class="btn btn-outline-primary btn-sm w-100">
+                                {{ models[i].name[:15] }}... vs {{ models[i+1].name[:15] }}...
+                            </a>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent selecting the same model in both dropdowns
+    const model1Select = document.querySelector('select[name="model1"]');
+    const model2Select = document.querySelector('select[name="model2"]');
+    
+    function updateModelOptions() {
+        const model1Value = model1Select.value;
+        const model2Value = model2Select.value;
+        
+        // Enable all options first
+        Array.from(model1Select.options).forEach(option => option.disabled = false);
+        Array.from(model2Select.options).forEach(option => option.disabled = false);
+        
+        // Disable selected model in the other dropdown
+        if (model1Value) {
+            Array.from(model2Select.options).forEach(option => {
+                if (option.value === model1Value) option.disabled = true;
+            });
+        }
+        
+        if (model2Value) {
+            Array.from(model1Select.options).forEach(option => {
+                if (option.value === model2Value) option.disabled = true;
+            });
+        }
+    }
+    
+    model1Select.addEventListener('change', updateModelOptions);
+    model2Select.addEventListener('change', updateModelOptions);
+    
+    // Initialize on page load
+    updateModelOptions();
+});
+</script>
+{% endblock %}

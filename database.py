@@ -556,6 +556,102 @@ class DatabaseManager:
                 'selected_models': selected_models_data
             }
 
+    def get_model_comparison_data(self, model_key):
+        """Get comprehensive model data for comparison including config and all test results."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Get model basic info and metadata
+            cursor.execute("""
+                SELECT model_key, name, meta
+                FROM models
+                WHERE model_key = ?
+            """, (model_key,))
+            
+            model_row = cursor.fetchone()
+            if not model_row:
+                return None
+            
+            model_data = {
+                'model_key': model_row[0],
+                'name': model_row[1],
+                'meta': json.loads(model_row[2])
+            }
+            
+            # Get all task results for this model
+            cursor.execute("""
+                SELECT 
+                    t.task_id,
+                    t.task_name,
+                    t.task_group,
+                    o.output_text,
+                    o.tokens,
+                    o.length,
+                    GROUP_CONCAT(m.metric_name || ':' || m.metric_value) as metrics
+                FROM tasks t
+                LEFT JOIN outputs o ON t.task_id = o.task_id AND o.model_key = ?
+                LEFT JOIN metrics m ON o.id = m.output_id
+                GROUP BY t.task_id, t.task_name, t.task_group, o.output_text, o.tokens, o.length
+                ORDER BY t.task_group, t.task_id
+            """, (model_key,))
+            
+            task_results = []
+            task_groups = {}
+            
+            for row in cursor.fetchall():
+                task_result = {
+                    'task_id': row[0],
+                    'task_name': row[1],
+                    'task_group': row[2],
+                    'output_text': row[3],
+                    'tokens': row[4],
+                    'length': row[5],
+                    'metrics': {}
+                }
+                
+                # Parse metrics
+                if row[6]:  # metrics string exists
+                    for metric_pair in row[6].split(','):
+                        if ':' in metric_pair:
+                            name, value = metric_pair.split(':', 1)
+                            try:
+                                task_result['metrics'][name] = float(value)
+                            except ValueError:
+                                task_result['metrics'][name] = value
+                
+                task_results.append(task_result)
+                
+                # Group by task_group for summary stats
+                group = row[2] or 'ungrouped'
+                if group not in task_groups:
+                    task_groups[group] = {
+                        'tasks': [],
+                        'avg_quality_score': 0,
+                        'avg_rouge_l': 0,
+                        'avg_bert_score': 0,
+                        'total_tasks': 0
+                    }
+                
+                if task_result['metrics']:
+                    task_groups[group]['tasks'].append(task_result)
+            
+            # Calculate group averages
+            for group_name, group_data in task_groups.items():
+                if group_data['tasks']:
+                    quality_scores = [t['metrics'].get('quality_score', 0) for t in group_data['tasks'] if t['metrics'].get('quality_score') is not None]
+                    rouge_scores = [t['metrics'].get('rouge_l', 0) for t in group_data['tasks'] if t['metrics'].get('rouge_l') is not None]
+                    bert_scores = [t['metrics'].get('bert_score', 0) for t in group_data['tasks'] if t['metrics'].get('bert_score') is not None]
+                    
+                    group_data['avg_quality_score'] = sum(quality_scores) / len(quality_scores) if quality_scores else 0
+                    group_data['avg_rouge_l'] = sum(rouge_scores) / len(rouge_scores) if rouge_scores else 0
+                    group_data['avg_bert_score'] = sum(bert_scores) / len(bert_scores) if bert_scores else 0
+                    group_data['total_tasks'] = len(group_data['tasks'])
+            
+            model_data['task_results'] = task_results
+            model_data['task_groups'] = task_groups
+            
+            return model_data
+
 
 def init_database_cli():
     """CLI function to initialize database."""

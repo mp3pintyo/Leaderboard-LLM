@@ -156,6 +156,30 @@ def create_app() -> Flask:
                              selected_models=model_keys,
                              task_performance_data=task_performance_data)
     
+    @app.route('/compare-model')
+    def compare_model():
+        """Compare two models side-by-side with config and test results."""
+        model1_key = request.args.get('model1')
+        model2_key = request.args.get('model2')
+        
+        # Get all available models
+        models = db.get_models()
+        
+        model1_data = None
+        model2_data = None
+        
+        if model1_key and model2_key:
+            # Get detailed model data including all test results
+            model1_data = db.get_model_comparison_data(model1_key)
+            model2_data = db.get_model_comparison_data(model2_key)
+        
+        return render_template('compare_model.html',
+                             models=models,
+                             model1=model1_data,
+                             model2=model2_data,
+                             selected_model1=model1_key,
+                             selected_model2=model2_key)
+    
     @app.route('/model/<model_key>')
     def model_detail(model_key: str):
         """Model detail page."""
