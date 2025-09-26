@@ -35,7 +35,7 @@ A Flask-based web application for comparing Large Language Model (LLM) performan
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.10 or higher [Python 3.10.11](https://www.python.org/downloads/release/python-31011/)
 - PowerShell (Windows) or bash (Linux/macOS)
 
 ### Installation & Setup
