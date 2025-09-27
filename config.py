@@ -320,7 +320,23 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': '≤128K', 'price': '$1.20'}, {'threshold': '>128K', 'price': '$3.00'}],
         'output_price': [{'threshold': '≤128K', 'price': '$6.00'}, {'threshold': '>128K', 'price': '$15.00'}]
-    }
+    },
+    'llm-020': {
+        'name': 'Qwen3-30B-A3B-Instruct-2507',
+        'api_id': 'qwen3-30b-a3b-instruct-2507',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'Alibaba Cloud',
+        'parameters': 30,  # Billion parameters
+        'context_window': 262,  # Thousand tokens (K)
+        'release_date': '2025-07-25',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': 'Free'}],
+        'output_price': [{'threshold': 'all', 'price': 'Free'}]
+    },
 }
 
 # Task groups and categories
