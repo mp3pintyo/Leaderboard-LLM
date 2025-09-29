@@ -1,4 +1,4 @@
-# LLM Lea## Features
+# LLM Leaderboard Features
 
 - 🏆 **Interactive Leaderboard** - Compare models across multiple metrics with filtering
 - ⚙️ **Customizable Columns** - Personalize leaderboard view with column selection settings
@@ -11,7 +11,8 @@
 - 🔍 **Advanced Filtering** - Filter by open source, task groups, languages, metrics, and more
 - 🔢 **Quality Score System** - Human evaluation scoring (0-10) with research task exclusion
 - 🌐 **REST API** - Full API access for programmatic usage
-- 📱 **Responsive UI** - Modern Bootstrap-based interface with Chart.js visualizations[![GitHub](https://img.shields.io/badge/GitHub-mp3pintyo%2FLeaderboard--LLM-blue)](https://github.com/mp3pintyo/Leaderboard-LLM)
+- 📱 **Responsive UI** - Modern Bootstrap-based interface with Chart.js visualizations
+[![GitHub](https://img.shields.io/badge/GitHub-mp3pintyo%2FLeaderboard--LLM-blue)](https://github.com/mp3pintyo/Leaderboard-LLM)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-2.3.3-green)](https://flask.palletsprojects.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
