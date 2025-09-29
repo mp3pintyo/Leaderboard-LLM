@@ -249,7 +249,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'reasoning': True,
         'languages': ['en'],  # Több nyelv
         'tags': ['general'],  # Több tag
-        'provider': 'DeepSeek',
+        'provider': 'DeepSeek AI',
         'parameters': 671,  # Billion parameters
         'context_window': 164,  # Thousand tokens (K)
         'release_date': '2025-05-28',
