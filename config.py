@@ -337,6 +337,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'input_price': [{'threshold': 'all', 'price': 'Free'}],
         'output_price': [{'threshold': 'all', 'price': 'Free'}]
     },
+    'llm-021': {
+        'name': 'Claude Sonnet 4.5',
+        'api_id': 'claude-sonnet-4-5',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],  # Több nyelv
+        'tags': ['general'],  # Több tag
+        'provider': 'Anthropic',
+        'parameters': 0,  # Billion parameters
+        'context_window': 1000,  # Thousand tokens (K)
+        'release_date': '2025-09-29',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$3.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+    },
 }
 
 # Task groups and categories
