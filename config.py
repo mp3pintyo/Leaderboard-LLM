@@ -353,6 +353,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'input_price': [{'threshold': 'all', 'price': '$3.00'}],
         'output_price': [{'threshold': 'all', 'price': '$15.00'}]
     },
+    'llm-022': {
+        'name': 'GLM-4.6-355B-A32B',
+        'api_id': 'glm-4-6-355b-a32b',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Z.ai',
+        'parameters': 355,  # Billion parameters
+        'context_window': 200,  # Thousand tokens (K)
+        'release_date': '2025-09-30',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.60'}],
+        'output_price': [{'threshold': 'all', 'price': '$2.10'}]
+    }
 }
 
 # Task groups and categories
