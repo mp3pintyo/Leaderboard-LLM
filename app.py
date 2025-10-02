@@ -21,6 +21,8 @@ def create_app() -> Flask:
     app.config['SECRET_KEY'] = SECRET_KEY
     app.config['DEBUG'] = DEBUG
     app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+    # Toggle to enable/disable import UI and API (useful for hosted environments)
+    app.config['IMPORTS_ENABLED'] = os.environ.get('IMPORTS_ENABLED', 'true').lower() == 'true'
     
     # Initialize database manager
     db = DatabaseManager()
@@ -46,6 +48,11 @@ def create_app() -> Flask:
         return jsonify({'error': 'Internal server error'}), 500
     
     # Web interface routes
+    @app.context_processor
+    def inject_imports_flag():
+        # Make imports_enabled available in all templates
+        return {'imports_enabled': app.config.get('IMPORTS_ENABLED', True)}
+
     @app.route('/')
     def index():
         """Main leaderboard page."""
@@ -196,10 +203,12 @@ def create_app() -> Flask:
                              model=model, 
                              task_group_data=task_group_data)
     
-    @app.route('/import')
-    def import_page():
-        """Import data page."""
-        return render_template('import.html')
+    # Register import routes only when imports are enabled via env/config
+    if app.config.get('IMPORTS_ENABLED', True):
+        @app.route('/import')
+        def import_page():
+            """Import data page."""
+            return render_template('import.html')
     
     # API endpoints
     @app.route('/api/models')
@@ -314,52 +323,54 @@ def create_app() -> Flask:
             'model': model
         })
     
-    @app.route('/api/import', methods=['POST'])
-    def api_import():
-        """Import data from uploaded Excel/CSV file."""
-        if 'file' not in request.files:
-            return jsonify({'error': 'No file uploaded'}), 400
-        
-        file = request.files['file']
-        if file.filename == '':
-            return jsonify({'error': 'No file selected'}), 400
-        
-        if not allowed_file(file.filename):
-            return jsonify({'error': f'File type not allowed. Allowed: {ALLOWED_EXTENSIONS}'}), 400
-        
-        try:
-            # Save uploaded file temporarily
-            filename = secure_filename(file.filename)
-            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as tmp_file:
-                file.save(tmp_file.name)
-                tmp_path = tmp_file.name
+    # API import endpoint - only register if imports enabled
+    if app.config.get('IMPORTS_ENABLED', True):
+        @app.route('/api/import', methods=['POST'])
+        def api_import():
+            """Import data from uploaded Excel/CSV file."""
+            if 'file' not in request.files:
+                return jsonify({'error': 'No file uploaded'}), 400
             
-            # Get import options
-            compute_metrics = request.form.get('compute_metrics', 'true').lower() == 'true'
-            dry_run = request.form.get('dry_run', 'false').lower() == 'true'
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'error': 'No file selected'}), 400
             
-            # Import data
-            importer = ExcelImporter(db)
-            result = importer.import_data(
-                tmp_path,
-                compute_metrics=compute_metrics,
-                dry_run=dry_run
-            )
+            if not allowed_file(file.filename):
+                return jsonify({'error': f'File type not allowed. Allowed: {ALLOWED_EXTENSIONS}'}), 400
             
-            # Clean up temporary file
-            os.unlink(tmp_path)
-            
-            return jsonify(result)
-            
-        except Exception as e:
-            # Clean up temporary file if it exists
-            if 'tmp_path' in locals():
-                try:
-                    os.unlink(tmp_path)
-                except:
-                    pass
-            
-            return jsonify({'error': str(e)}), 500
+            try:
+                # Save uploaded file temporarily
+                filename = secure_filename(file.filename)
+                with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as tmp_file:
+                    file.save(tmp_file.name)
+                    tmp_path = tmp_file.name
+                
+                # Get import options
+                compute_metrics = request.form.get('compute_metrics', 'true').lower() == 'true'
+                dry_run = request.form.get('dry_run', 'false').lower() == 'true'
+                
+                # Import data
+                importer = ExcelImporter(db)
+                result = importer.import_data(
+                    tmp_path,
+                    compute_metrics=compute_metrics,
+                    dry_run=dry_run
+                )
+                
+                # Clean up temporary file
+                os.unlink(tmp_path)
+                
+                return jsonify(result)
+                
+            except Exception as e:
+                # Clean up temporary file if it exists
+                if 'tmp_path' in locals():
+                    try:
+                        os.unlink(tmp_path)
+                    except:
+                        pass
+                
+                return jsonify({'error': str(e)}), 500
     
     # Additional utility endpoints
     @app.route('/api/stats')
