@@ -22,7 +22,9 @@ def create_app() -> Flask:
     app.config['DEBUG'] = DEBUG
     app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
     # Toggle to enable/disable import UI and API (useful for hosted environments)
-    app.config['IMPORTS_ENABLED'] = os.environ.get('IMPORTS_ENABLED', 'true').lower() == 'true'
+    imports_env = os.environ.get('IMPORTS_ENABLED', 'true').lower()
+    app.config['IMPORTS_ENABLED'] = imports_env == 'true'
+    print(f"🔧 IMPORTS_ENABLED env: '{os.environ.get('IMPORTS_ENABLED')}' -> parsed: {app.config['IMPORTS_ENABLED']}")
     
     # Initialize database manager
     db = DatabaseManager()

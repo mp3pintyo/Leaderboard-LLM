@@ -1074,6 +1074,108 @@ Get-ChildItem data/sample_import_template-*.xlsx | ForEach-Object {
 
 Az importálási rendszer garantálja, hogy mindig a legfrissebb értékek maradnak meg az adatbázisban.
 
+## Production Deployment
+
+### Environment Variables
+
+A következő környezeti változót használhatod a deployment során:
+
+| Változó | Leírás | Default érték | Példa |
+|---------|--------|---------------|-------|
+| `IMPORTS_ENABLED` | Import UI és API engedélyezése/tiltása | `true` | `false` |
+| `SECRET_KEY` | Flask session titkosító kulcs | `dev-key-change-in-production` | `your-secret-key` |
+| `FLASK_DEBUG` | Debug mód | `True` | `False` |
+
+### Render.com Deployment
+
+**1. Render.com beállítás:**
+
+1. Hozz létre egy új **Web Service**-t Render.com-on
+2. Kapcsold össze a GitHub repository-val
+3. Állítsd be a következőket:
+   - **Build Command:** `pip install -r requirements.txt`
+   - **Start Command:** `gunicorn --bind 0.0.0.0:$PORT wsgi:app`
+   
+**2. Környezeti változók beállítása:**
+
+A Render Dashboard → Service → Environment fülön add hozzá:
+
+```
+IMPORTS_ENABLED=false
+SECRET_KEY=your-production-secret-key-here
+FLASK_DEBUG=False
+```
+
+**3. WSGI szerver setup:**
+
+Hozd létre a `wsgi.py` fájlt a projekt gyökerében:
+
+```python
+from app import create_app
+
+app = create_app()
+
+if __name__ == '__main__':
+    app.run()
+```
+
+**4. requirements.txt frissítése:**
+
+Add hozzá a `gunicorn`-t a `requirements.txt` fájlhoz:
+
+```
+gunicorn==21.2.0
+```
+
+### Alternatív deployment opciók
+
+**Waitress (Windows-friendly):**
+
+```bash
+# Telepítés
+pip install waitress
+
+# Indítás
+waitress-serve --port=5000 wsgi:app
+```
+
+**Gunicorn (Linux):**
+
+```bash
+# Telepítés
+pip install gunicorn
+
+# Indítás
+gunicorn --bind 0.0.0.0:5000 wsgi:app
+
+# Több worker-rel
+gunicorn --bind 0.0.0.0:5000 --workers 4 wsgi:app
+```
+
+### Import funkció tiltása
+
+Az `IMPORTS_ENABLED=false` környezeti változó hatásai:
+
+- ❌ **Import UI rejtve** - Az "Import" menüpont nem jelenik meg
+- ❌ **Import route letiltva** - A `/import` oldal 404-et ad
+- ❌ **API endpoint letiltva** - A `/api/import` endpoint 404-et ad
+- ✅ **Minden más működik** - Leaderboard, összehasonlítások, API-k
+
+Ez hasznos hosted környezetekben (pl. Render.com), ahol nem szeretnéd, hogy bárki feltölthessen adatokat.
+
+### Production Checklist
+
+Mielőtt éles környezetbe teszed:
+
+- [ ] `SECRET_KEY` környezeti változó beállítva
+- [ ] `FLASK_DEBUG=False` beállítva
+- [ ] `IMPORTS_ENABLED=false` beállítva (ha nem kell import)
+- [ ] WSGI szerver használata (gunicorn/waitress)
+- [ ] `requirements.txt` frissítve gunicorn-nal
+- [ ] `wsgi.py` fájl létrehozva
+- [ ] Adatbázis backup terv
+- [ ] SSL/HTTPS engedélyezve (Render automatikusan kezeli)
+
 ## Acknowledgments
 
 - Built with Flask and Bootstrap for modern web experience

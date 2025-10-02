@@ -13,6 +13,7 @@ itsdangerous==2.1.2
 MarkupSafe==2.1.3
 numpy==1.24.3
 scipy==1.11.3
+gunicorn==21.2.0
 
 # Optional dependencies for real metrics (disabled by default)
 # Uncomment to enable real BLEU, ROUGE, BERTScore
