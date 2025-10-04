@@ -384,6 +384,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.60'}],
         'output_price': [{'threshold': 'all', 'price': '$2.10'}]
+    },
+    'llm-024': {
+        'name': 'DeepSeek-V3.2-Exp',
+        'api_id': 'deepseek-v3-2-exp',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Deepseek AI',
+        'parameters': 671,  # Billion parameters
+        'context_window': 163,  # Thousand tokens (K)
+        'release_date': '2025-09-29',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.28'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.42'}]
     }
 }
 
