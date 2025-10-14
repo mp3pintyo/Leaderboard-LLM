@@ -400,6 +400,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.28'}],
         'output_price': [{'threshold': 'all', 'price': '$0.42'}]
+    },
+    'llm-025': {
+        'name': 'Ling-1T',
+        'api_id': 'ling-1t',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'inclusionAI',
+        'parameters': 1024,  # Billion parameters
+        'context_window': 128,  # Thousand tokens (K)
+        'release_date': '2025-10-03',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.56'}],
+        'output_price': [{'threshold': 'all', 'price': '$2.24'}]
     }
 }
 
