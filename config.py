@@ -416,6 +416,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.56'}],
         'output_price': [{'threshold': 'all', 'price': '$2.24'}]
+    },
+    'llm-026': {
+        'name': 'MiniMax M2',
+        'api_id': 'minimax-m2',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'MiniMax',
+        'parameters': 230,  # Billion parameters
+        'context_window': 200,  # Thousand tokens (K)
+        'release_date': '2025-10-23',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.30'}],
+        'output_price': [{'threshold': 'all', 'price': '$1.20'}]
     }
 }
 
