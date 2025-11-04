@@ -432,6 +432,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.30'}],
         'output_price': [{'threshold': 'all', 'price': '$1.20'}]
+    },
+    'llm-027': {
+        'name': 'Qwen3 Max Thinking',
+        'api_id': 'qwen3-max-thinking',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en', 'hu'],
+        'tags': ['general'],
+        'provider': 'Alibaba Cloud',
+        'parameters': 1000,  # Billion parameters
+        'context_window': 262,  # Thousand tokens (K)
+        'release_date': '2025-11-02',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '-'}],
+        'output_price': [{'threshold': 'all', 'price': '-'}]
     }
 }
 
