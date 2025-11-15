@@ -82,7 +82,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'output_price': [{'threshold': 'all', 'price': '$1.60'}]
     },
     'llm-005': {
-        'name': 'Kimi K2 0905',
+        'name': 'Kimi K2 0905 Thinking',
         'api_id': 'kimi-k2-0905',
         'open_source': True,
         'tokenizer': 'unknown',
@@ -210,7 +210,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'output_price': [{'threshold': '≤128K', 'price': '$15.00'}, {'threshold': '>128K', 'price': '$30.00'}]
     },
     'llm-013': {
-        'name': 'Kimi K2 0905',
+        'name': 'Kimi K2 0905 Instruct',
         'api_id': 'kimi-k2',
         'open_source': True,
         'tokenizer': 'unknown',
