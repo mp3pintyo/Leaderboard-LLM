@@ -35,7 +35,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
     },
     'llm-002': {
         'name': 'GPT-4o (2024-11-20)',
-        'api_id': 'gpt-4o',
+        'api_id': 'gpt-4o-2024-11-20',
         'open_source': False,
         'tokenizer': 'unknown',  # Javított tokenizer
         'reasoning': False,
