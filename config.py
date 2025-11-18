@@ -34,7 +34,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'output_price': [{'threshold': '≤128K', 'price': '$6.00'}, {'threshold': '>128K', 'price': '$15.00'}]
     },
     'llm-002': {
-        'name': 'GPT-4o',
+        'name': 'GPT-4o (2024-11-20)',
         'api_id': 'gpt-4o',
         'open_source': False,
         'tokenizer': 'unknown',  # Javított tokenizer
@@ -44,7 +44,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'provider': 'OpenAI',
         'parameters': 200,  # Billion parameters
         'context_window': 128,  # Thousand tokens (K)
-        'release_date': '2025-02-01',
+        'release_date': '2024-11-20',
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$2.50'}],
         'output_price': [{'threshold': 'all', 'price': '$10.00'}]
