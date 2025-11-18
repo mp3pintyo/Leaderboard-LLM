@@ -393,7 +393,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'reasoning': True,
         'languages': ['en'],
         'tags': ['general'],
-        'provider': 'Deepseek AI',
+        'provider': 'DeepSeek AI',
         'parameters': 671,  # Billion parameters
         'context_window': 163,  # Thousand tokens (K)
         'release_date': '2025-09-29',
