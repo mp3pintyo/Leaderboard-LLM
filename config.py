@@ -464,6 +464,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$0.6'}],
         'output_price': [{'threshold': 'all', 'price': '$2.50'}]
+    },
+    'llm-029': {
+        'name': 'Grok 4.1',
+        'api_id': 'grok-4-1',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'xAI',
+        'parameters': 0,  # Billion parameters
+        'context_window': 0,  # Thousand tokens (K)
+        'release_date': '2025-11-17',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$0.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.00'}]
     }
 }
 
