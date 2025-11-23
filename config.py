@@ -496,6 +496,7 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$0.00'}],
         'output_price': [{'threshold': 'all', 'price': '$0.00'}]
+    }
 }
 
 # Task groups and categories
