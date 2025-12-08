@@ -513,6 +513,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'input_price': [{'threshold': 'all', 'price': '$0.28'}],
         'output_price': [{'threshold': 'all', 'price': '$0.42'}]
     },
+    'llm-032': {
+        'name': 'DeepSeek V3.2 Thinking',
+        'api_id': 'deepseek-v3-2-thinking',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'DeepSeek AI',
+        'parameters': 671,  # Billion parameters
+        'context_window': 128,  # Thousand tokens (K)
+        'release_date': '2025-12-01',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$0.28'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.42'}]
+    }
 }
 
 # Task groups and categories
