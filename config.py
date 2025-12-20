@@ -528,6 +528,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$0.28'}],
         'output_price': [{'threshold': 'all', 'price': '$0.42'}]
+    },
+    'llm-033': {
+        'name': 'Gemini 3 Flash Thinking',
+        'api_id': 'gemini-3-flash-thinking',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Google',
+        'parameters': 0,  # Billion parameters
+        'context_window': 1000,  # Thousand tokens (K)
+        'release_date': '2025-12-17',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$0.50'}],
+        'output_price': [{'threshold': 'all', 'price': '$3.00'}]
     }
 }
 
