@@ -544,6 +544,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$0.50'}],
         'output_price': [{'threshold': 'all', 'price': '$3.00'}]
+    },
+    'llm-034': {
+        'name': 'GLM-4.7',
+        'api_id': 'glm-4-7',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Z.ai',
+        'parameters': 358,  # Billion parameters
+        'context_window': 200,  # Thousand tokens (K)
+        'release_date': '2025-12-23',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.60'}],
+        'output_price': [{'threshold': 'all', 'price': '$2.20'}]
     }
 }
 
