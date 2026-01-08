@@ -576,6 +576,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.30'}],
         'output_price': [{'threshold': 'all', 'price': '$1.20'}]
+    },
+    'llm-036': {
+        'name': 'MiMo-V2-Flash',
+        'api_id': 'mimo-v2-flash',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Xiaomi',
+        'parameters': 309,  # Billion parameters
+        'context_window': 256,  # Thousand tokens (K)
+        'release_date': '2026-12-16',
+        'image_input': False,
+        'input_price': [{'threshold': 'all', 'price': '$0.1'}],
+        'output_price': [{'threshold': 'all', 'price': '$0.30'}]
     }
 }
 
