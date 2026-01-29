@@ -592,6 +592,22 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': False,
         'input_price': [{'threshold': 'all', 'price': '$0.1'}],
         'output_price': [{'threshold': 'all', 'price': '$0.30'}]
+    },
+    'llm-037': {
+        'name': 'Kimi K2.5 Instant',
+        'api_id': 'kimi-k2-5-instant',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': False,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Moonshot AI',
+        'parameters': 1000,  # Billion parameters
+        'context_window': 256,  # Thousand tokens (K)
+        'release_date': '2026-01-28',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$0.6'}],
+        'output_price': [{'threshold': 'all', 'price': '$3.0'}]
     }
 }
 
