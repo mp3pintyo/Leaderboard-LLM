@@ -624,7 +624,24 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$0.6'}],
         'output_price': [{'threshold': 'all', 'price': '$3.0'}]
+    },
+    'llm-039': {
+        'name': 'GLM-5',
+        'api_id': 'glm-5',
+        'open_source': True,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Z.ai',
+        'parameters': 744,  # Billion parameters
+        'context_window': 200,  # Thousand tokens (K)
+        'release_date': '2026-02-11',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$1.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$3.20'}]
     }
+
 }
 
 # Task groups and categories
