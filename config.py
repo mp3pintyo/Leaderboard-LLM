@@ -657,9 +657,23 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'input_price': [{'threshold': 'all', 'price': '$3.00'}],
         'output_price': [{'threshold': 'all', 'price': '$15.00'}]
     },
-
+    'llm-041': {
+        'name': 'Google Gemini 3.1 Pro',
+        'api_id': 'google-gemini-3-1-pro',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Google',
+        'parameters': 0,  # Billion parameters
+        'context_window': 1000,  # Thousand tokens (K)
+        'release_date': '2026-02-19',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$2.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$12.00'}]
+    },
 }
-
 # Task groups and categories
 TASK_GROUPS = [
     'language_tasks',      # 1-3: Nyelvi feladatok (országnevek, pangram, haiku)
