@@ -640,7 +640,23 @@ MODELS: Dict[str, Dict[str, Any]] = {
         'image_input': True,
         'input_price': [{'threshold': 'all', 'price': '$1.00'}],
         'output_price': [{'threshold': 'all', 'price': '$3.20'}]
-    }
+    },
+    'llm-040': {
+        'name': 'Claude Sonnet 4.6',
+        'api_id': 'claude-sonnet-4-6',
+        'open_source': False,
+        'tokenizer': 'unknown',
+        'reasoning': True,
+        'languages': ['en'],
+        'tags': ['general'],
+        'provider': 'Anthropic',
+        'parameters': 0,  # Billion parameters
+        'context_window': 200,  # Thousand tokens (K)
+        'release_date': '2026-02-17',
+        'image_input': True,
+        'input_price': [{'threshold': 'all', 'price': '$3.00'}],
+        'output_price': [{'threshold': 'all', 'price': '$15.00'}]
+    },
 
 }
 
