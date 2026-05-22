@@ -2,6 +2,57 @@
 
 {% block title %}Model Comparison{% endblock %}
 
+{% block extra_head %}
+<style>
+    .comparison-chart-card {
+        border: 0;
+        overflow: hidden;
+        box-shadow: 0 0.75rem 2rem rgba(15, 23, 42, 0.08);
+    }
+
+    .comparison-chart-header {
+        background: linear-gradient(135deg, #0f766e 0%, #1d4ed8 100%);
+        color: #fff;
+    }
+
+    .comparison-chart-wrap {
+        position: relative;
+        height: 420px;
+    }
+
+    .comparison-stat {
+        border-radius: 0.9rem;
+        border: 1px solid #e9ecef;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+        padding: 1rem;
+        height: 100%;
+    }
+
+    .comparison-stat-label {
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6c757d;
+    }
+
+    .comparison-stat-value {
+        font-size: 1.55rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .comparison-stat small {
+        color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+        .comparison-chart-wrap {
+            height: 320px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-lg-12">
@@ -549,6 +600,52 @@
         
         <!-- Detailed Task Results -->
         {% if (model1 and model1.task_results) or (model2 and model2.task_results) or (model3 and model3.task_results) %}
+        {% set task_ns = namespace(all_tasks=[]) %}
+        {% if model1 %}
+        {% for task in model1.task_results %}
+            {% if task.task_id not in task_ns.all_tasks %}
+                {% set _ = task_ns.all_tasks.append(task.task_id) %}
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% if model2 %}
+        {% for task in model2.task_results %}
+            {% if task.task_id not in task_ns.all_tasks %}
+                {% set _ = task_ns.all_tasks.append(task.task_id) %}
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% if model3 %}
+        {% for task in model3.task_results %}
+            {% if task.task_id not in task_ns.all_tasks %}
+                {% set _ = task_ns.all_tasks.append(task.task_id) %}
+            {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% set all_tasks = task_ns.all_tasks | sort %}
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card comparison-chart-card">
+                    <div class="card-header comparison-chart-header">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div>
+                                <h5 class="mb-1"><i class="fas fa-chart-line"></i> Task-by-Task Score Comparison</h5>
+                                <small class="opacity-75">Y tengely: pontszam 0-10, X tengely: task sorszam. A tooltip mutatja a task azonositojat es nevet is.</small>
+                            </div>
+                            <span class="badge bg-light text-dark px-3 py-2">{{ all_tasks|length }} tasks</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3 mb-4" id="comparisonStats"></div>
+                        <div class="comparison-chart-wrap">
+                            <canvas id="modelTaskComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card">
@@ -574,29 +671,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% set all_tasks = [] %}
-                                    {% if model1 %}
-                                    {% for task in model1.task_results %}
-                                        {% if task.task_id not in all_tasks %}
-                                            {% set _ = all_tasks.append(task.task_id) %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% endif %}
-                                    {% if model2 %}
-                                    {% for task in model2.task_results %}
-                                        {% if task.task_id not in all_tasks %}
-                                            {% set _ = all_tasks.append(task.task_id) %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% endif %}
-                                    {% if model3 %}
-                                    {% for task in model3.task_results %}
-                                        {% if task.task_id not in all_tasks %}
-                                            {% set _ = all_tasks.append(task.task_id) %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% endif %}
-                                    
                                     {% for task_id in all_tasks %}
                                         {% set model1_task = model1.task_results | selectattr('task_id', 'equalto', task_id) | first if model1 else None %}
                                         {% set model2_task = model2.task_results | selectattr('task_id', 'equalto', task_id) | first if model2 else None %}
@@ -713,6 +787,30 @@
 {% endblock %}
 
 {% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% set chart_task_ns = namespace(all_tasks=[]) %}
+{% if model1 %}
+{% for task in model1.task_results %}
+    {% if task.task_id not in chart_task_ns.all_tasks %}
+        {% set _ = chart_task_ns.all_tasks.append(task.task_id) %}
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% if model2 %}
+{% for task in model2.task_results %}
+    {% if task.task_id not in chart_task_ns.all_tasks %}
+        {% set _ = chart_task_ns.all_tasks.append(task.task_id) %}
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% if model3 %}
+{% for task in model3.task_results %}
+    {% if task.task_id not in chart_task_ns.all_tasks %}
+        {% set _ = chart_task_ns.all_tasks.append(task.task_id) %}
+    {% endif %}
+{% endfor %}
+{% endif %}
+{% set chart_all_tasks = chart_task_ns.all_tasks | sort %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Prevent selecting the same model in dropdowns
@@ -793,6 +891,199 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Re-align if window is resized
     window.addEventListener('resize', alignPerformanceOverview);
+
+    const comparisonCanvas = document.getElementById('modelTaskComparisonChart');
+    if (comparisonCanvas) {
+        const palette = ['#2563eb', '#16a34a', '#dc2626'];
+        const modelDatasets = [
+            {% if model1 %}
+            {
+                label: {{ model1.name|tojson }},
+                borderColor: palette[0],
+                backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                pointBackgroundColor: palette[0],
+                pointBorderColor: '#ffffff',
+                data: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model1_task = model1.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {{ model1_task.metrics.quality_score if model1_task and model1_task.metrics and model1_task.metrics.get('quality_score') is not none else 'null' }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                taskMeta: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model1_task = model1.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {
+                        taskId: {{ task_id|tojson }},
+                        taskName: {{ (model1_task.task_name if model1_task else '')|tojson }},
+                        taskGroup: {{ (model1_task.task_group if model1_task else '')|tojson }}
+                    }{{ "," if not loop.last }}
+                    {% endfor %}
+                ]
+            },
+            {% endif %}
+            {% if model2 %}
+            {
+                label: {{ model2.name|tojson }},
+                borderColor: palette[1],
+                backgroundColor: 'rgba(22, 163, 74, 0.12)',
+                pointBackgroundColor: palette[1],
+                pointBorderColor: '#ffffff',
+                data: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model2_task = model2.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {{ model2_task.metrics.quality_score if model2_task and model2_task.metrics and model2_task.metrics.get('quality_score') is not none else 'null' }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                taskMeta: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model2_task = model2.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {
+                        taskId: {{ task_id|tojson }},
+                        taskName: {{ (model2_task.task_name if model2_task else '')|tojson }},
+                        taskGroup: {{ (model2_task.task_group if model2_task else '')|tojson }}
+                    }{{ "," if not loop.last }}
+                    {% endfor %}
+                ]
+            },
+            {% endif %}
+            {% if model3 %}
+            {
+                label: {{ model3.name|tojson }},
+                borderColor: palette[2],
+                backgroundColor: 'rgba(220, 38, 38, 0.12)',
+                pointBackgroundColor: palette[2],
+                pointBorderColor: '#ffffff',
+                data: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model3_task = model3.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {{ model3_task.metrics.quality_score if model3_task and model3_task.metrics and model3_task.metrics.get('quality_score') is not none else 'null' }}{{ "," if not loop.last }}
+                    {% endfor %}
+                ],
+                taskMeta: [
+                    {% for task_id in chart_all_tasks %}
+                    {% set model3_task = model3.task_results | selectattr('task_id', 'equalto', task_id) | first %}
+                    {
+                        taskId: {{ task_id|tojson }},
+                        taskName: {{ (model3_task.task_name if model3_task else '')|tojson }},
+                        taskGroup: {{ (model3_task.task_group if model3_task else '')|tojson }}
+                    }{{ "," if not loop.last }}
+                    {% endfor %}
+                ]
+            },
+            {% endif %}
+        ].filter(dataset => dataset.label);
+
+        const labels = [
+            {% for task_id in chart_all_tasks %}
+            {{ loop.index }}{{ "," if not loop.last }}
+            {% endfor %}
+        ];
+
+        const statsContainer = document.getElementById('comparisonStats');
+        if (statsContainer) {
+            statsContainer.innerHTML = modelDatasets.map((dataset) => {
+                const validScores = dataset.data.filter((value) => typeof value === 'number');
+                const avgScore = validScores.length
+                    ? (validScores.reduce((sum, value) => sum + value, 0) / validScores.length).toFixed(2)
+                    : '0.00';
+                const topScore = validScores.length ? Math.max(...validScores).toFixed(1) : '0.0';
+                const strongTasks = validScores.filter((value) => value >= 8).length;
+
+                return `
+                    <div class="col-lg-4 col-md-6">
+                        <div class="comparison-stat">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <strong style="color:${dataset.borderColor}">${dataset.label}</strong>
+                                <span class="badge" style="background:${dataset.borderColor}; color:#fff;">${validScores.length} scored</span>
+                            </div>
+                            <div class="comparison-stat-label">Atlag pontszam</div>
+                            <div class="comparison-stat-value">${avgScore}</div>
+                            <small>Legjobb score: ${topScore} | 8+ pontos taskok: ${strongTasks}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        new Chart(comparisonCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels,
+                datasets: modelDatasets.map((dataset) => ({
+                    ...dataset,
+                    fill: false,
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBorderWidth: 2,
+                    tension: 0.28,
+                    spanGaps: true
+                }))
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            boxWidth: 10,
+                            padding: 18
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const pointIndex = context[0].dataIndex;
+                                const meta = context[0].dataset.taskMeta[pointIndex];
+                                return `Task #${labels[pointIndex]} - ${meta.taskId}`;
+                            },
+                            beforeBody: function(context) {
+                                const pointIndex = context[0].dataIndex;
+                                const meta = context[0].dataset.taskMeta[pointIndex];
+                                return meta.taskName || 'No task name';
+                            },
+                            afterBody: function(context) {
+                                const pointIndex = context[0].dataIndex;
+                                const meta = context[0].dataset.taskMeta[pointIndex];
+                                return meta.taskGroup ? `Group: ${meta.taskGroup}` : '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                            stepSize: 1
+                        },
+                        title: {
+                            display: true,
+                            text: 'Pontszam'
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.2)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Task sorszam'
+                        },
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
 });
 </script>
 {% endblock %}
