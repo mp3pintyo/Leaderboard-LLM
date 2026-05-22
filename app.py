@@ -167,27 +167,33 @@ def create_app() -> Flask:
     
     @app.route('/compare-model')
     def compare_model():
-        """Compare two models side-by-side with config and test results."""
+        """Compare up to three models side-by-side with config and test results."""
         model1_key = request.args.get('model1')
         model2_key = request.args.get('model2')
+        model3_key = request.args.get('model3')
         
         # Get all available models
         models = db.get_models()
         
         model1_data = None
         model2_data = None
+        model3_data = None
         
-        if model1_key and model2_key:
-            # Get detailed model data including all test results
+        if model1_key:
             model1_data = db.get_model_comparison_data(model1_key)
+        if model2_key:
             model2_data = db.get_model_comparison_data(model2_key)
-        
+        if model3_key:
+            model3_data = db.get_model_comparison_data(model3_key)
+
         return render_template('compare_model.html',
                              models=models,
                              model1=model1_data,
                              model2=model2_data,
+                             model3=model3_data,
                              selected_model1=model1_key,
-                             selected_model2=model2_key)
+                             selected_model2=model2_key,
+                             selected_model3=model3_key)
     
     @app.route('/model/<model_key>')
     def model_detail(model_key: str):
