@@ -186,11 +186,23 @@ def create_app() -> Flask:
         if model3_key:
             model3_data = db.get_model_comparison_data(model3_key)
 
+        selected_models = [model for model in [model1_data, model2_data, model3_data] if model]
+        comparison_ready = len(selected_models) >= 2
+
+        if len(selected_models) == 3:
+            col_class = 'col-lg-4 col-md-6 mb-4'
+        elif len(selected_models) == 2:
+            col_class = 'col-lg-6 mb-4'
+        else:
+            col_class = 'col-12 mb-4'
+
         return render_template('compare_model.html',
                              models=models,
                              model1=model1_data,
                              model2=model2_data,
                              model3=model3_data,
+                             comparison_ready=comparison_ready,
+                             col_class=col_class,
                              selected_model1=model1_key,
                              selected_model2=model2_key,
                              selected_model3=model3_key)

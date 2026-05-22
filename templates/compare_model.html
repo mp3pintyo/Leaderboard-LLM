@@ -15,7 +15,7 @@
             <h5><i class="fas fa-filter"></i> Select Models to Compare</h5>
             <form method="GET" action="{{ url_for('compare_model') }}">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">First Model</label>
                         <select name="model1" class="form-select" onchange="this.form.submit()">
                             <option value="">Choose first model...</option>
@@ -26,7 +26,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label">Second Model</label>
                         <select name="model2" class="form-select" onchange="this.form.submit()">
                             <option value="">Choose second model...</option>
@@ -37,11 +37,22 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Third Model</label>
+                        <select name="model3" class="form-select" onchange="this.form.submit()">
+                            <option value="">Choose third model...</option>
+                            {% for model in models %}
+                            <option value="{{ model.model_key }}" {% if selected_model3 == model.model_key %}selected{% endif %}>
+                                {{ model.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
                 </div>
             </form>
         </div>
         
-        {% if model1 and model2 %}
+        {% if comparison_ready %}
         <!-- Model Comparison Grid -->
         <div class="row">
             <!-- Model 1 Column -->
@@ -675,7 +686,7 @@
         <!-- No models selected -->
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i>
-            <strong>Get Started:</strong> Select two models above to compare their configurations and performance.
+            <strong>Get Started:</strong> Select two or three models above to compare their configurations and performance.
         </div>
         
         <!-- Popular comparisons -->
